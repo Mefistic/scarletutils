@@ -471,7 +471,6 @@ $on_mod(Loaded)
             }
             #endif
 
-            
             ImGui::Checkbox("Click Green Dash Orbs", &clickGreenDashOrbs);
             if (ImGui::IsItemEdited()) { Mod::get()->setSavedValue<bool>("clickGreenDashOrbs", clickGreenDashOrbs); }
             if (ImGui::IsItemHovered())
