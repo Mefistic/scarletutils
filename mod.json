@@ -10,7 +10,7 @@
 	"name": "Scarlet Utils",
 	"version": "v1.0.1",
 	"developer": "scarlet",
-	"description": "Tools for botting and showcasing.",
+	"description": "Hacks for botting and showcasing.",
 	"dependencies":
 	{
 		"geode.custom-keybinds":
