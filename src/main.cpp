@@ -623,7 +623,7 @@ $on_mod(Loaded)
             });
 }
 
-// #ifdef GEODE_MOBILE
+#ifdef GEODE_MOBILE
 class $modify(ScarletUtilsPauseLayerHook, PauseLayer)
 {
     void customSetup() {
@@ -647,4 +647,4 @@ class $modify(ScarletUtilsPauseLayerHook, PauseLayer)
         menuVisible = !menuVisible;
     }
 };
-// #endif
+#endif
