@@ -426,6 +426,9 @@ $on_mod(Loaded)
 {
     ImGuiCocos::get().setup([] {
         auto* font = ImGui::GetIO().Fonts->AddFontFromFileTTF((Mod::get()->getResourcesDir() / "font.ttf").string().c_str(), 18.0f);
+        #ifdef GEODE_IS_MOBILE
+        font = ImGui::GetIO().Fonts->AddFontFromFileTTF((Mod::get()->getResourcesDir() / "font.ttf").string().c_str(), 36.0f);
+        #endif
         ImGui::GetIO().FontDefault = font;
     }).draw([&]
         {
@@ -437,6 +440,9 @@ $on_mod(Loaded)
             style.WindowMenuButtonPosition = ImGuiDir_None;
             style.WindowBorderSize = 0.f;
             style.WindowRounding = 6.0f;
+            #ifdef GEODE_IS_MOBILE
+            style.WindowRounding = 12.0f;
+            #endif
             style.PopupBorderSize = 0.f;
             style.Colors[ImGuiCol_WindowBg] = ImVec4(0.05f, 0.016f, 0.025f, 0.9f);
             style.Colors[ImGuiCol_PopupBg] = ImVec4(0.05f, 0.016f, 0.025f, 0.9f);
@@ -446,8 +452,11 @@ $on_mod(Loaded)
             style.Colors[ImGuiCol_ButtonHovered] = ImVec4(0.5f, 0.16f, 0.25f, 1.0f);
             style.Colors[ImGuiCol_ButtonActive] = ImVec4(0.5f, 0.16f, 0.25f, 1.0f);
             style.Colors[ImGuiCol_TextSelectedBg] = ImVec4(1.f, 0.25f, 0.4f, 0.33f);
-
+            
             ImGui::SetNextWindowSizeConstraints(ImVec2(450.f, -1.0f), ImVec2(INFINITY, -1.0f));
+            #ifdef GEODE_IS_MOBILE
+            ImGui::SetNextWindowSizeConstraints(ImVec2(900.f, -1.0f), ImVec2(INFINITY, -1.0f));
+            #endif
             ImGui::Begin("Scarlet Utils", nullptr, ImGuiWindowFlags_AlwaysAutoResize);
 
             #ifdef GEODE_IS_WINDOWS
@@ -554,10 +563,10 @@ $on_mod(Loaded)
             if (ImGui::ArrowButton("Level Fade Options", levelFadeOptions ? ImGuiDir_Down : ImGuiDir_Right)) levelFadeOptions = !levelFadeOptions;
             
             if (levelFadeOptions) {
-                ImGui::DragScalar("Level Fade In (s)", ImGuiDataType_Double, &fadeLevelInDuration, 0.01, 0, NULL, "%.2f");
+                ImGui::InputDouble("Level Fade In (s)", &fadeLevelInDuration, 0.1, 0.5, "%.2f");
                 if (ImGui::IsItemEdited()) { Mod::get()->setSavedValue<double>("fadeLevelInDuration", fadeLevelInDuration); }
 
-                ImGui::DragScalar("Level Fade Out (s)", ImGuiDataType_Double, &fadeLevelOutDuration, 0.01, 0, NULL, "%.2f");
+                ImGui::InputDouble("Level Fade Out (s)", &fadeLevelOutDuration, 0.1, 0.5, "%.2f");
                 if (ImGui::IsItemEdited()) { Mod::get()->setSavedValue<double>("fadeLevelOutDuration", fadeLevelOutDuration); }
             }
 
@@ -576,10 +585,10 @@ $on_mod(Loaded)
             if (ImGui::ArrowButton("Audio Fade Options", audioFadeOptions ? ImGuiDir_Down : ImGuiDir_Right)) audioFadeOptions = !audioFadeOptions;
 
             if (audioFadeOptions) {
-                ImGui::DragScalar("Audio Fade In (s)", ImGuiDataType_Double, &fadeAudioInDuration, 0.01, 0, NULL, "%.2f");
+                ImGui::InputDouble("Audio Fade In (s)", &fadeAudioInDuration, 0.1, 0.5, "%.2f");
                 if (ImGui::IsItemEdited()) { Mod::get()->setSavedValue<double>("fadeAudioInDuration", fadeAudioInDuration); }
 
-                ImGui::DragScalar("Audio Fade Out (s)", ImGuiDataType_Double, &fadeAudioOutDuration, 0.01, 0, NULL, "%.2f");
+                ImGui::InputDouble("Audio Fade Out (s)", &fadeAudioOutDuration, 0.1, 0.5, "%.2f");
                 if (ImGui::IsItemEdited()) { Mod::get()->setSavedValue<double>("fadeAudioOutDuration", fadeAudioOutDuration); }
             }
 
@@ -623,7 +632,7 @@ $on_mod(Loaded)
             });
 }
 
-#ifdef GEODE_MOBILE
+#ifdef GEODE_IS_MOBILE
 class $modify(ScarletUtilsPauseLayerHook, PauseLayer)
 {
     void customSetup() {
