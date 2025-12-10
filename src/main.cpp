@@ -49,64 +49,66 @@ bool noEffect = Mod::get()->getSavedValue<bool>("noEffect", false);
 bool clickJumpPads = Mod::get()->getSavedValue<bool>("clickJumpPads", false);
 bool clickedJumpPad = false;
 bool restartFirstFrame = Mod::get()->getSavedValue<bool>("pauseFirstTick", false);
-bool autoStraightFly = Mod::get()->getSavedValue<bool>("autoStraightFly", false);
-double autoStraightFlyThreshold = Mod::get()->getSavedValue<bool>("autoStraightFlyThreshold", 0);
+bool straightFly = Mod::get()->getSavedValue<bool>("straightFly", false);
+bool straightFlyP1 = Mod::get()->getSavedValue<bool>("straightFlyP1", false);
+bool straightFlyP2 = Mod::get()->getSavedValue<bool>("straightFlyP2", false);
+double straightFlyThresholdP1 = Mod::get()->getSavedValue<double>("straightFlyThresholdP1", 0.0);
+double straightFlyThresholdP2 = Mod::get()->getSavedValue<double>("straightFlyThresholdP2", 0.0);
 bool layoutMode = Mod::get()->getSavedValue<bool>("layoutMode", false);
-bool zoomEnabled = Mod::get()->getSavedValue<bool>("zoomEnabled", false);
-double zoom = Mod::get()->getSavedValue<double>("zoom", 1);
-float zoomAnchorX = Mod::get()->getSavedValue<float>("zoomAnchorX", 0.5);
-float zoomAnchorY = Mod::get()->getSavedValue<float>("zoomAnchorY", 0.5);
-bool zoomOnP1 = Mod::get()->getSavedValue<bool>("zoomOnP1", false);
-bool zoomOnP2 = Mod::get()->getSavedValue<bool>("zoomOnP2", false);
+bool straightUfo = Mod::get()->getSavedValue<bool>("straightUfo", false);
+bool straightUfoP1 = Mod::get()->getSavedValue<bool>("straightUfoP1", false);
+bool straightUfoP2 = Mod::get()->getSavedValue<bool>("straightUfoP2", false);
+double straightUfoTargetP1 = Mod::get()->getSavedValue<double>("straightUfoTargetP1", 135.0);
+double straightUfoTargetP2 = Mod::get()->getSavedValue<double>("straightUfoTargetP2", 135.0);
 
 class $modify(GJBaseGameLayer)
 {
     void processCommands(float dt) {
         clickedJumpPad = false;
 
-        if (autoStraightFly)
+        if (straightUfo)
         {
-            if (m_player1->m_isShip &&
-                ((m_player1->m_yVelocity < -autoStraightFlyThreshold && !m_player1->m_holdingButtons[1] && !m_player1->m_isUpsideDown) ||
-                (m_player1->m_yVelocity > autoStraightFlyThreshold && m_player1->m_holdingButtons[1] && !m_player1->m_isUpsideDown) ||
-                (m_player1->m_yVelocity > autoStraightFlyThreshold && !m_player1->m_holdingButtons[1] && m_player1->m_isUpsideDown) ||
-                (m_player1->m_yVelocity < -autoStraightFlyThreshold && m_player1->m_holdingButtons[1] && m_player1->m_isUpsideDown))
+            if (straightUfoP1 &&
+            ((m_player1->getPositionY() < straightUfoTargetP1 && m_player1->m_yVelocity < 0 && !m_player1->m_isUpsideDown) ||
+            (m_player1->getPositionY() > straightUfoTargetP1 && m_player1->m_yVelocity > 0 && !m_player1->m_isUpsideDown) ||
+            (m_player1->getPositionY() > straightUfoTargetP1 && m_player1->m_yVelocity > 0 && m_player1->m_isUpsideDown) ||
+            (m_player1->getPositionY() < straightUfoTargetP1 && m_player1->m_yVelocity < 0 && m_player1->m_isUpsideDown))
+            ) {
+                this->queueButton(1, false, false);
+                this->queueButton(1, true, false);
+            }
+
+            if (straightUfoP2 &&
+            ((m_player2->getPositionY() < straightUfoTargetP2 && m_player2->m_yVelocity < 0 && !m_player2->m_isUpsideDown) ||
+            (m_player2->getPositionY() > straightUfoTargetP2 && m_player2->m_yVelocity > 0 && !m_player2->m_isUpsideDown) ||
+            (m_player2->getPositionY() > straightUfoTargetP2 && m_player2->m_yVelocity > 0 && m_player2->m_isUpsideDown) ||
+            (m_player2->getPositionY() < straightUfoTargetP2 && m_player2->m_yVelocity < 0 && m_player2->m_isUpsideDown))
+            ) {
+                this->queueButton(1, false, true);
+                this->queueButton(1, true, true);
+            }
+        }
+
+        if (straightFly)
+        {
+            if (straightFlyP1 &&
+                ((m_player1->getYVelocity() < -straightFlyThresholdP1 && !m_player1->m_holdingButtons[1] && !m_player1->m_isUpsideDown) ||
+                (m_player1->getYVelocity() > straightFlyThresholdP1 && m_player1->m_holdingButtons[1] && !m_player1->m_isUpsideDown) ||
+                (m_player1->getYVelocity() > straightFlyThresholdP1 && !m_player1->m_holdingButtons[1] && m_player1->m_isUpsideDown) ||
+                (m_player1->getYVelocity() < -straightFlyThresholdP1 && m_player1->m_holdingButtons[1] && m_player1->m_isUpsideDown))
             )
                 this->queueButton(1, !m_player1->m_holdingButtons[1], false);
 
-            if (m_player2->m_isShip &&
-                ((m_player2->m_yVelocity < -autoStraightFlyThreshold && !m_player2->m_holdingButtons[1] && !m_player2->m_isUpsideDown) ||
-                (m_player2->m_yVelocity > autoStraightFlyThreshold && m_player2->m_holdingButtons[1] && !m_player2->m_isUpsideDown) ||
-                (m_player2->m_yVelocity > autoStraightFlyThreshold && !m_player2->m_holdingButtons[1] && m_player2->m_isUpsideDown) ||
-                (m_player2->m_yVelocity < -autoStraightFlyThreshold && m_player2->m_holdingButtons[1] && m_player2->m_isUpsideDown))
+            if (straightFlyP2 &&
+                ((m_player2->getYVelocity() < -straightFlyThresholdP2 && !m_player2->m_holdingButtons[1] && !m_player2->m_isUpsideDown) ||
+                (m_player2->getYVelocity() > straightFlyThresholdP2 && m_player2->m_holdingButtons[1] && !m_player2->m_isUpsideDown) ||
+                (m_player2->getYVelocity() > straightFlyThresholdP2 && !m_player2->m_holdingButtons[1] && m_player2->m_isUpsideDown) ||
+                (m_player2->getYVelocity() < -straightFlyThresholdP2 && m_player2->m_holdingButtons[1] && m_player2->m_isUpsideDown))
             )
                 this->queueButton(1, !m_player2->m_holdingButtons[1], true);
         }
 
         GJBaseGameLayer::processCommands(dt);
-        
-        if (zoomEnabled && PlayLayer::get())
-        {
-            if (zoomOnP1)
-            {
-                auto pos = this->convertToNodeSpace(m_player1->getParent()->convertToWorldSpace(m_player1->getPosition()));
-                CCScene::get()->getChildByID("PlayLayer")->setAnchorPoint({pos.x/this->getContentWidth(), pos.y/this->getContentHeight()});
-            }
-            else if (zoomOnP2 && m_player2)
-            {
-                auto pos = this->convertToNodeSpace(m_player2->getParent()->convertToWorldSpace(m_player2->getPosition()));
-                CCScene::get()->getChildByID("PlayLayer")->setAnchorPoint({pos.x/this->getContentWidth(), pos.y/this->getContentHeight()});
-            }
-            else
-            {
-                CCScene::get()->getChildByID("PlayLayer")->setAnchorPoint({zoomAnchorX, zoomAnchorY});
-            }
-            CCScene::get()->getChildByID("PlayLayer")->setScale(zoom);
-        }
-        else if (PlayLayer::get())
-        {
-            CCScene::get()->getChildByID("PlayLayer")->setScale(1);
-        }
     }
 
     void playExitDualEffect(PlayerObject* player)
@@ -141,7 +143,7 @@ class $modify(GJBaseGameLayer)
                 }
             }
 
-            if ((blackOrbUfo || clickBlackOrbs) && button.m_isPush)
+            if ((blackOrbUfo || straightUfo || clickBlackOrbs) && button.m_isPush)
             {
                 for (auto i : CCArrayExt<RingObject *>(player->m_touchingRings))
                 {
@@ -505,8 +507,13 @@ $on_mod(Loaded)
             style.Colors[ImGuiCol_ButtonActive] = ImVec4(0.5f, 0.16f, 0.25f, 1.0f);
             style.Colors[ImGuiCol_TextSelectedBg] = ImVec4(1.f, 0.25f, 0.4f, 0.33f);
             
-            ImGui::Begin("Gameplay", nullptr, ImGuiWindowFlags_AlwaysAutoResize);
 
+            #ifdef GEODE_IS_MOBILE
+            ImGui::Begin("Scarlet Utils", nullptr, ImGuiWindowFlags_AlwaysAutoResize);
+            #endif
+            #ifdef GEODE_IS_DESKTOP
+            ImGui::Begin("Gameplay", nullptr, ImGuiWindowFlags_AlwaysAutoResize);
+            #endif
             #ifdef GEODE_IS_WINDOWS
             ImGui::Checkbox("Auto Backstep On Death", &preventDeath);
             if (ImGui::IsItemEdited()) { Mod::get()->setSavedValue<bool>("preventDeath", preventDeath); }
@@ -569,8 +576,8 @@ $on_mod(Loaded)
                 ImGui::EndTooltip();
             }
 
-            ImGui::Checkbox("Auto Straight Fly", &autoStraightFly);
-            if (ImGui::IsItemEdited()) { Mod::get()->setSavedValue<bool>("autoStraightFly", autoStraightFly); }
+            ImGui::Checkbox("Auto Straight Fly", &straightFly);
+            if (ImGui::IsItemEdited()) { Mod::get()->setSavedValue<bool>("straightFly", straightFly); }
             if (ImGui::IsItemHovered())
             {
                 ImGui::BeginTooltip();
@@ -578,15 +585,62 @@ $on_mod(Loaded)
                 ImGui::EndTooltip();
             }
 
-            static bool autoStraightFlyOptions = false;
+            static bool straightFlyOptions = false;
             ImGui::SameLine();
-            if (ImGui::ArrowButton("Straight Fly Options", autoStraightFlyOptions ? ImGuiDir_Down : ImGuiDir_Right)) autoStraightFlyOptions = !autoStraightFlyOptions;
+            if (ImGui::ArrowButton("Auto Straight Fly Options", straightFlyOptions ? ImGuiDir_Down : ImGuiDir_Right)) straightFlyOptions = !straightFlyOptions;
             
-            if (autoStraightFlyOptions) {
-                ImGui::InputDouble("Y Velocity Threshold", &autoStraightFlyThreshold, 0.05, 0.05, "%.2f");
+            if (straightFlyOptions)
+            {
+                ImGui::Checkbox("Player 1##ship", &straightFlyP1);
+                if (ImGui::IsItemEdited()) { Mod::get()->setSavedValue<bool>("straightFlyP1", straightFlyP1); }
+
+                ImGui::InputDouble("Velocity Threshold##p1ship", &straightFlyThresholdP1, 0.25, 0.25, "%.2f");
                 if (ImGui::IsItemEdited()) {
-                    autoStraightFlyThreshold = std::max(autoStraightFlyThreshold, 0.0);
-                    Mod::get()->setSavedValue<double>("autoStraightFlyThreshold", autoStraightFlyThreshold);
+                    straightFlyThresholdP1 = std::max(straightFlyThresholdP1, 0.0);
+                    Mod::get()->setSavedValue<double>("straightFlyThresholdP1", straightFlyThresholdP1);
+                }
+
+                ImGui::Checkbox("Player 2##ship", &straightFlyP2);
+                if (ImGui::IsItemEdited()) { Mod::get()->setSavedValue<bool>("straightFlyP2", straightFlyP2); }
+
+                ImGui::InputDouble("Velocity Threshold##p2ship", &straightFlyThresholdP2, 0.25, 0.25, "%.2f");
+                if (ImGui::IsItemEdited()) {
+                    straightFlyThresholdP2 = std::max(straightFlyThresholdP2, 0.0);
+                    Mod::get()->setSavedValue<double>("straightFlyThresholdP2", straightFlyThresholdP2);
+                }
+            }
+
+            ImGui::Checkbox("Auto Straight Ufo", &straightUfo);
+            if (ImGui::IsItemEdited()) { Mod::get()->setSavedValue<bool>("straightUfo", straightUfo); }
+            if (ImGui::IsItemHovered())
+            {
+                ImGui::BeginTooltip();
+                ImGui::Text("Attempts to stabilize your UFO on a Y position.");
+                ImGui::EndTooltip();
+            }
+
+            static bool autoStraightUfoOptions = false;
+            ImGui::SameLine();
+            if (ImGui::ArrowButton("Straight Ufo Options", autoStraightUfoOptions ? ImGuiDir_Down : ImGuiDir_Right)) autoStraightUfoOptions = !autoStraightUfoOptions;
+            
+            if (autoStraightUfoOptions)
+            {
+                ImGui::Checkbox("Player 1##ufo", &straightUfoP1);
+                if (ImGui::IsItemEdited()) { Mod::get()->setSavedValue<bool>("straightUfoP1", straightUfoP1); }
+
+                ImGui::InputDouble("Y Position Target##p1ufo", &straightUfoTargetP1, 5.0, 5.0, "%.0f");
+                if (ImGui::IsItemEdited()) {
+                    straightUfoTargetP1 = std::max(straightUfoTargetP1, 0.0);
+                    Mod::get()->setSavedValue<double>("straightUfoTargetP1", straightUfoTargetP1);
+                }
+
+                ImGui::Checkbox("Player 2##ufo", &straightUfoP2);
+                if (ImGui::IsItemEdited()) { Mod::get()->setSavedValue<bool>("straightUfoP2", straightUfoP2); }
+
+                ImGui::InputDouble("Y Position Target##p2ufo", &straightUfoTargetP2, 5.0, 5.0, "%.0f");
+                if (ImGui::IsItemEdited()) {
+                    straightUfoTargetP2 = std::max(straightUfoTargetP2, 0.0);
+                    Mod::get()->setSavedValue<double>("straightUfoTargetP2", straightUfoTargetP2);
                 }
             }
 
@@ -612,9 +666,11 @@ $on_mod(Loaded)
                 if (ImGui::IsItemEdited()) { Mod::get()->setSavedValue<bool>("flipOnDeathSwift", flipOnDeathSwift); }
             }
             #endif
-            ImGui::End();
 
+            #ifdef GEODE_IS_DESKTOP
+            ImGui::End();
             ImGui::Begin("Visual", nullptr, ImGuiWindowFlags_AlwaysAutoResize);
+            #endif
 
             ImGui::Checkbox("Level Fade In/Out", &fadeLevel);
             if (ImGui::IsItemEdited()) { Mod::get()->setSavedValue<bool>("fadeLevel", fadeLevel); }
@@ -631,13 +687,13 @@ $on_mod(Loaded)
             if (ImGui::ArrowButton("Level Fade Options", levelFadeOptions ? ImGuiDir_Down : ImGuiDir_Right)) levelFadeOptions = !levelFadeOptions;
             
             if (levelFadeOptions) {
-                ImGui::InputDouble("Fade In (Level)", &fadeLevelInDuration, 0.1, 0.1, "%.2f");
+                ImGui::InputDouble("Fade In##level", &fadeLevelInDuration, 0.1, 0.1, "%.2f");
                 if (ImGui::IsItemEdited()) {
                     fadeLevelInDuration = std::max(fadeLevelInDuration, 0.0);
                     Mod::get()->setSavedValue<double>("fadeLevelInDuration", fadeLevelInDuration);
                 }
 
-                ImGui::InputDouble("Fade Out (Level)", &fadeLevelOutDuration, 0.1, 0.1, "%.2f");
+                ImGui::InputDouble("Fade Out##level", &fadeLevelOutDuration, 0.1, 0.1, "%.2f");
                 if (ImGui::IsItemEdited()) {
                     fadeLevelOutDuration = std::max(fadeLevelOutDuration, 0.0);
                     Mod::get()->setSavedValue<double>("fadeLevelOutDuration", fadeLevelOutDuration);
@@ -659,13 +715,13 @@ $on_mod(Loaded)
             if (ImGui::ArrowButton("Audio Fade Options", audioFadeOptions ? ImGuiDir_Down : ImGuiDir_Right)) audioFadeOptions = !audioFadeOptions;
 
             if (audioFadeOptions) {
-                ImGui::InputDouble("Fade In (Audio)", &fadeAudioInDuration, 0.1, 0.1, "%.2f");
+                ImGui::InputDouble("Fade In##audio", &fadeAudioInDuration, 0.1, 0.1, "%.2f");
                 if (ImGui::IsItemEdited()) {
                     fadeAudioInDuration = std::max(fadeAudioInDuration, 0.0);
                     Mod::get()->setSavedValue<double>("fadeAudioInDuration", fadeAudioInDuration);
                 }
 
-                ImGui::InputDouble("Fade Out (Audio)", &fadeAudioOutDuration, 0.1, 0.1, "%.2f");
+                ImGui::InputDouble("Fade Out##audio", &fadeAudioOutDuration, 0.1, 0.1, "%.2f");
                 if (ImGui::IsItemEdited()) {
                     fadeAudioOutDuration = std::max(fadeAudioOutDuration, 0.0);
                     Mod::get()->setSavedValue<double>("fadeAudioOutDuration", fadeAudioOutDuration);
@@ -715,48 +771,6 @@ $on_mod(Loaded)
                 ImGui::BeginTooltip();
                 ImGui::Text("Hides decoration from levels.");
                 ImGui::EndTooltip();
-            }
-
-            ImGui::Checkbox("Zoom", &zoomEnabled);
-            if (ImGui::IsItemEdited()) { Mod::get()->setSavedValue<bool>("zoomEnabled", zoomEnabled); }
-            if (ImGui::IsItemHovered())
-            {
-                ImGui::BeginTooltip();
-                ImGui::Text("Zooms in the screen.");
-                ImGui::EndTooltip();
-            }
-
-            static bool zoomOptions = false;
-            ImGui::SameLine();
-            if (ImGui::ArrowButton("Zoom Options", zoomOptions ? ImGuiDir_Down : ImGuiDir_Right)) zoomOptions = !zoomOptions;
-            
-            if (zoomOptions)
-            {
-                ImGui::InputDouble("Zoom Amount", &zoom, 0.25, 0.25, "%.2f");
-                if (ImGui::IsItemEdited()) {
-                    zoom = std::max(zoom, 0.5);
-                    Mod::get()->setSavedValue<double>("zoom", zoom);
-                }
-
-                ImGui::InputFloat("Anchor X", &zoomAnchorX, 0.05, 0.05, "%.2f");
-                if (ImGui::IsItemEdited()) {
-                    zoomAnchorX = std::max(zoomAnchorX, 0.f);
-                    zoomAnchorX = std::min(zoomAnchorX, 1.f);
-                    Mod::get()->setSavedValue<float>("zoomAnchorX", zoomAnchorX);
-                }
-
-                ImGui::InputFloat("Anchor Y", &zoomAnchorY, 0.05, 0.05, "%.2f");
-                if (ImGui::IsItemEdited()) {
-                    zoomAnchorY = std::max(zoomAnchorY, 0.f);
-                    zoomAnchorY = std::min(zoomAnchorY, 1.f);
-                    Mod::get()->setSavedValue<float>("zoomAnchorY", zoomAnchorY);
-                }
-
-                ImGui::Checkbox("Anchor P1", &zoomOnP1);
-                if (ImGui::IsItemEdited()) { Mod::get()->setSavedValue<bool>("zoomOnP1", zoomOnP1); }
-
-                ImGui::Checkbox("Anchor P2", &zoomOnP2);
-                if (ImGui::IsItemEdited()) { Mod::get()->setSavedValue<bool>("zoomOnP2", zoomOnP2); }
             }
 
             ImGui::Checkbox("Restart First Frame", &restartFirstFrame);
