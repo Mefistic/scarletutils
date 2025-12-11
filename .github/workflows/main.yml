@@ -37,6 +37,9 @@ jobs:
         with:
           combine: true
           target: ${{ matrix.config.target }}
+          build-config: RelWithDebInfo
+          export-pdb: true
+          bundle-pdb: true
 
   package:
     name: Package builds
