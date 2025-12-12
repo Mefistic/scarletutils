@@ -67,11 +67,11 @@ double straightUfoTargetP1 = Mod::get()->getSavedValue<double>("straightUfoTarge
 double straightUfoTargetP2 = Mod::get()->getSavedValue<double>("straightUfoTargetP2", 135.0);
 double straightUfoThresholdP1 = Mod::get()->getSavedValue<double>("straightUfoThresholdP1", 0.0);
 double straightUfoThresholdP2 = Mod::get()->getSavedValue<double>("straightUfoThresholdP2", 0.0);
-bool maintainGravity = Mod::get()->getSavedValue<bool>("maintainGravity", false);
-bool maintainGravityP1 = Mod::get()->getSavedValue<bool>("maintainGravityP1", false);
-bool maintainGravityP2 = Mod::get()->getSavedValue<bool>("maintainGravityP2", false);
-bool autoclickerP1 = Mod::get()->getSavedValue<bool>("autoclickerP1", false);
-bool autoclickerP2 = Mod::get()->getSavedValue<bool>("autoclickerP2", false);
+bool maintainGravity = false;
+bool maintainGravityP1 = true;
+bool maintainGravityP2 = true;
+bool autoclickerP1 = false;
+bool autoclickerP2 = false;
 int autoclickerEveryP1 = 1;
 int autoclickerEveryP2 = 1;
 int autoclickerHoldP1 = 1;
@@ -84,6 +84,9 @@ bool autoclickerSwiftP1 = false;
 bool autoclickerSwiftP2 = false;
 bool autoclickerEndP1 = false;
 bool autoclickerEndP2 = false;
+bool noclip = false;
+bool noclipP1 = true;
+bool noclipP2 = true;
 
 class $modify(CCCircleWave)
 {
@@ -201,19 +204,21 @@ class $modify(GJBaseGameLayer)
 
         GJBaseGameLayer::processCommands(dt);
 
+        bool p1holding = m_uiLayer->m_p1Jumping || autoclickerHoldingP1;
+        bool p2holding = m_uiLayer->m_p2Jumping || autoclickerHoldingP2;
         if (maintainGravity && maintainGravityP1 && !PlayLayer::get()->m_levelEndAnimationStarted)
         {
-            while (m_player1->m_isUpsideDown == (m_uiLayer->m_p1Jumping == m_player1->m_jumpBuffered) && !m_player1->m_controlsDisabled)
+            while (m_player1->m_isUpsideDown == (p1holding == m_player1->m_jumpBuffered) && !m_player1->m_controlsDisabled)
             {
-                this->handleButton(m_uiLayer->m_p1Jumping ^ m_player1->m_isUpsideDown, 1, true);
+                this->handleButton(p1holding ^ m_player1->m_isUpsideDown, 1, true);
             }
         }
 
         if (maintainGravity && maintainGravityP2 && !PlayLayer::get()->m_levelEndAnimationStarted)
         {
-            while (m_player2->m_isUpsideDown == (m_uiLayer->m_p2Jumping == m_player2->m_jumpBuffered) && !m_player2->m_controlsDisabled)
+            while (m_player2->m_isUpsideDown == (p2holding == m_player2->m_jumpBuffered) && !m_player2->m_controlsDisabled)
             {
-                this->handleButton(m_uiLayer->m_p2Jumping ^ m_player2->m_isUpsideDown, 1, false);
+                this->handleButton(p2holding ^ m_player2->m_isUpsideDown, 1, false);
             }
         }
     }
@@ -225,7 +230,7 @@ class $modify(GJBaseGameLayer)
         GJBaseGameLayer::playExitDualEffect(player);
     }
 
-    /*
+    #ifdef GEODE_IS_DESKTOP
     void handleButton(bool down, int button, bool isPlayer1)
     {
         auto player = isPlayer1 ?  m_player1 : m_player2;
@@ -256,9 +261,9 @@ class $modify(GJBaseGameLayer)
         }
         GJBaseGameLayer::handleButton(down, button, isPlayer1);
     }
-    // */
+    #endif
     
-    // /*
+    #ifdef GEODE_IS_MOBILE
     static void onModify(auto& self) {
         if (!self.setHookPriorityPre("GJBaseGameLayer::processQueuedButtons", Priority::First)) {
             geode::log::warn("Failed to set hook priority.");
@@ -298,7 +303,7 @@ class $modify(GJBaseGameLayer)
         }
         GJBaseGameLayer::processQueuedButtons();
     }
-    // */
+    #endif
     
     void updateColor(ccColor3B& color, float fadeTime, int colorID, bool blending, float opacity, ccHSVValue& copyHSV, int colorIDToCopy, bool copyOpacity, EffectGameObject* callerObject, int unk1, int unk2) {
         if (!PlayLayer::get() || !layoutMode)
@@ -416,6 +421,14 @@ class $modify(PlayLayer)
     {
         if (player->m_isDead || object == m_anticheatSpike)
         { return PlayLayer::destroyPlayer(player, object); }
+
+        if (noclip)
+        {
+            if (noclipP1 && player == m_player1)
+                return;
+            if (noclipP2 && player == m_player2)
+                return;
+        }
 
         PlayLayer::destroyPlayer(player, object);
 
@@ -705,6 +718,9 @@ $on_mod(Loaded)
             if (ImGui::IsItemHovered())
             {
                 ImGui::BeginTooltip();
+                #ifdef GEODE_IS_WINDOWS
+                ImGui::Text("REQUIRES ALTHOOK");
+                #endif
                 ImGui::Text("When you click, all green dash orbs your player can touch will be activated.");
                 ImGui::EndTooltip();
             }
@@ -713,6 +729,9 @@ $on_mod(Loaded)
             if (ImGui::IsItemHovered())
             {
                 ImGui::BeginTooltip();
+                #ifdef GEODE_IS_WINDOWS
+                ImGui::Text("REQUIRES ALTHOOK");
+                #endif
                 ImGui::Text("When you click, all black orbs your player can touch will be activated.");
                 ImGui::EndTooltip();
             }
@@ -721,6 +740,9 @@ $on_mod(Loaded)
             if (ImGui::IsItemHovered())
             {
                 ImGui::BeginTooltip();
+                #ifdef GEODE_IS_WINDOWS
+                ImGui::Text("REQUIRES ALTHOOK");
+                #endif
                 ImGui::Text("When you click, all black orbs your player can touch will be activated.");
                 ImGui::Text("If your player is going up (or down if gravity flipped), use a black orb normally.");
                 ImGui::EndTooltip();
@@ -771,6 +793,9 @@ $on_mod(Loaded)
             if (ImGui::IsItemHovered())
             {
                 ImGui::BeginTooltip();
+                #ifdef GEODE_IS_WINDOWS
+                ImGui::Text("REQUIRES ALTHOOK");
+                #endif
                 ImGui::Text("Attempts to stabilize your UFO on a Y position.");
                 ImGui::EndTooltip();
             }
@@ -832,8 +857,8 @@ $on_mod(Loaded)
                 ImGui::Checkbox("Swift", &flipOnDeathSwift);
             }
             #endif
-            /*
-            #ifdef GEODE_IS_WINDOWS
+
+            #ifdef GEODE_IS_DESKTOP
             ImGui::Checkbox("Maintain Gravity", &maintainGravity);
             if (ImGui::IsItemHovered())
             {
@@ -848,15 +873,12 @@ $on_mod(Loaded)
 
             if (maintainGravityOptions) {
                 ImGui::Checkbox("P1", &maintainGravityP1);
-                if (ImGui::IsItemEdited()) { Mod::get()->setSavedValue<bool>("maintainGravityP1", maintainGravityP1); }
                 ImGui::Checkbox("P2", &maintainGravityP2);
-                if (ImGui::IsItemEdited()) { Mod::get()->setSavedValue<bool>("maintainGravityP2", maintainGravityP2); }
             }
             #endif
-            // */
+
             ImGui::Checkbox("Autoclicker P1", &autoclickerP1);
             if (ImGui::IsItemEdited()) { 
-                Mod::get()->setSavedValue<bool>("autoclickerP1", autoclickerP1);
                 autoclickerTimerP1 = INT_MAX;
                 if (!autoclickerP1)
                     autoclickerEndP1 = true;
@@ -881,7 +903,6 @@ $on_mod(Loaded)
 
             ImGui::Checkbox("Autoclicker P2", &autoclickerP2);
             if (ImGui::IsItemEdited()) {
-                Mod::get()->setSavedValue<bool>("autoclickerP2", autoclickerP2);
                 autoclickerTimerP2 = INT_MAX;
                 if (!autoclickerP2)
                     autoclickerEndP2 = true;
@@ -902,6 +923,18 @@ $on_mod(Loaded)
                 if (ImGui::IsItemEdited()) { autoclickerHoldP2 = std::max(autoclickerHoldP2, 1); }
 
                 ImGui::Checkbox("Swift##autoclickP2", &autoclickerSwiftP2);
+            }
+
+            ImGui::Checkbox("Noclip", &noclip);
+
+            static bool noclipOptions = false;
+            ImGui::SameLine();
+            if (ImGui::ArrowButton("Noclip Options", noclipOptions ? ImGuiDir_Down : ImGuiDir_Right)) noclipOptions = !noclipOptions;
+            
+            if (noclipOptions)
+            {
+                ImGui::Checkbox("Player 1##noclip", &noclipP1);
+                ImGui::Checkbox("Player 2##noclip", &noclipP2);
             }
 
             #ifdef GEODE_IS_DESKTOP
