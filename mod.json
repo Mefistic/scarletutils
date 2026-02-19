@@ -1,26 +1,31 @@
 {
-	"geode": "4.10.0",
+	"geode": "5.0.0-beta.3",
 	"gd": {
-		"win": "2.2074",
-		"android": "2.2074",
-		"mac": "2.2074",
-		"ios": "2.2074"
+		"win": "2.2081",
+		"android": "2.2081",
+		"mac": "2.2081",
+		"ios": "2.2081"
 	},
 	"id": "scarlet.utils",
 	"name": "Scarlet Utils",
-	"version": "v1.5.0",
+	"version": "v1.6.0",
 	"developer": "scarlet",
 	"description": "Tools for botting and showcasing.",
+	"settings":
+	{
+		"scarlet.utils/menu":
+		{
+			"name": "Show Menu",
+			"type": "keybind",
+			"default": "F",
+			"migrate-from": "scarlet.utils/menu"
+		}
+	},
 	"dependencies":
 	{
-		"geode.custom-keybinds":
-		{
-			"version": ">=1.11.0",
-			"importance": "required"
-		},
 		"geode.node-ids":
 		{
-			"version": ">=1.21.1",
+			"version": ">=1.22.0",
 			"importance": "required"
 		}
 	},
