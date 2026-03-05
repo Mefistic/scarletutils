@@ -15,9 +15,6 @@ jobs:
         - name: Windows
           os: windows-latest
 
-        - name: macOS
-          os: macos-latest
-
         - name: Android32
           os: ubuntu-latest
           target: Android32
@@ -37,7 +34,6 @@ jobs:
         with:
           combine: true
           target: ${{ matrix.config.target }}
-          build-config: RelWithDebInfo
 
   package:
     name: Package builds
