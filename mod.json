@@ -11,6 +11,10 @@
 	"version": "v2.3.2",
 	"developer": "scarlet",
 	"description": "Tools for botting and showcasing.",
+	"links": {
+		"community": "https://discord.gg/FJbsfxsbWb",
+		"source": "https://github.com/Mefistic/scarletutils"
+	},
 	"settings":
 	{
 		"scarlet.utils/menu":
