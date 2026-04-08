@@ -11,6 +11,7 @@
 	"version": "v2.3.2",
 	"developer": "scarlet",
 	"description": "Tools for botting and showcasing.",
+	"tags": ["cheat","gameplay","utility"],
 	"links": {
 		"community": "https://discord.gg/FJbsfxsbWb",
 		"source": "https://github.com/Mefistic/scarletutils"
