@@ -8,7 +8,7 @@
 	},
 	"id": "scarlet.utils",
 	"name": "Scarlet Utils",
-	"version": "v2.3.3",
+	"version": "v2.3.4",
 	"developer": "scarlet",
 	"description": "Tools for botting and showcasing.",
 	"tags": ["cheat","gameplay","utility"],
@@ -16,10 +16,8 @@
 		"community": "https://discord.gg/FJbsfxsbWb",
 		"source": "https://github.com/Mefistic/scarletutils"
 	},
-	"settings":
-	{
-		"scarlet.utils/menu":
-		{
+	"settings": {
+		"scarlet.utils/menu": {
 			"name": "Show Menu",
 			"type": "keybind",
 			"default": "F",
@@ -29,7 +27,7 @@
 	},
 	"resources": {
 		"files": [
-			"resources/font.ttf"
+			"resources/*.ttf"
 		]
 	}
 }
