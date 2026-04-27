@@ -390,4 +390,13 @@ class $modify(ScarletUtilsGJBGLHook, GJBaseGameLayer) {
             middleground = 0;
         GJBaseGameLayer::createMiddleground(middleground);
     }
+
+    void handleButton(bool down, int button, bool isPlayer1) {
+        // uncomment this whenever you're gonna support mobile
+
+        /* #ifdef GEODE_IS_MOBILE
+            m_allowedButtons.clear(); // funny way to allow swift clicks on mobile
+        #endif */
+        GJBaseGameLayer::handleButton(down, button, isPlayer1);
+    }
 };
