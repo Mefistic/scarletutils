@@ -3,9 +3,9 @@
 #include <Geode/Geode.hpp>
 
 using namespace geode::prelude;
-
+#ifdef GEODE_IS_WINDOWS
 extern HWND hwnd;
-
+#endif
 extern bool preventDeath;
 extern bool noDeathEffect;
 extern bool hideEndscreen;
