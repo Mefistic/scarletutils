@@ -3,7 +3,7 @@
 
 using namespace geode::prelude;
 
-class $modify(ScarletUtilsGJGLHook, GJGroundLayer) {
+class $modify(ScarletGJGroundLayer, GJGroundLayer) {
     static GJGroundLayer* create(int groundID, int lineType) {
         if (layoutMode) {
             groundID = 1;

@@ -4,6 +4,8 @@
 
 using namespace geode::prelude;
 
+extern HWND hwnd;
+
 extern bool preventDeath;
 extern bool noDeathEffect;
 extern bool hideEndscreen;
@@ -33,10 +35,15 @@ extern double straightUfoThresholdP2;
 extern cocos2d::ccColor3B layoutModeColorBackground;
 extern cocos2d::ccColor3B layoutModeColorGround;
 
+extern int flipPlayer;
 extern bool flipOnDeath;
+extern bool flipOnDeathBoth;
+extern bool flipOnDeathP1;
+extern bool flipOnDeathP2;
 extern bool flipOnDeathLogicP1;
 extern bool flipOnDeathLogicP2;
 extern bool flipOnDeathSwift;
+extern bool flipOnDeathUnfreeze;
 
 extern bool autoUnfreeze;
 extern bool autoSwift;
@@ -53,8 +60,6 @@ extern bool straightFly;
 extern bool straightUfo;
 
 extern bool maintainGravity;
-extern bool maintainGravityP1;
-extern bool maintainGravityP2;
 
 extern bool autoclickerP1;
 extern bool autoclickerP2;
@@ -82,7 +87,6 @@ extern bool restartFirstFrame;
 extern bool layoutMode;
 extern bool blackOrbUfo;
 
-extern bool autoReleaseGravityOrbs;
 extern bool releaseGravityOrbsPrevent;
 
 extern cocos2d::CCLayerColor* m_startFadeLayer;

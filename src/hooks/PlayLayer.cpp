@@ -3,7 +3,7 @@
 
 using namespace geode::prelude;
 
-class $modify(ScarletUtilsPLHook, PlayLayer) {
+class $modify(ScarletPlayLayer, PlayLayer) {
     void addObject(GameObject* object) {
         if (!layoutMode || !PlayLayer::get())
             return PlayLayer::addObject(object);
@@ -47,12 +47,45 @@ class $modify(ScarletUtilsPLHook, PlayLayer) {
         }
 
         PlayLayer::destroyPlayer(player, object);
-        bool which = player->m_isSecondPlayer ^ GameManager::sharedState()->getGameVariable(GameVar::Flip2PlayerControls);
+
+        flipPlayer = player->m_isSecondPlayer ? 2 : 1;
 
         autoclickerHoldingP1 = false;
         autoclickerTimerP1 = INT_MAX;
         autoclickerHoldingP2 = false;
         autoclickerTimerP2 = INT_MAX;
+    }
+
+    void resetLevel() {
+        PlayLayer::resetLevel();
+        if (flipOnDeath && flipPlayer != 0) {
+            if (flipOnDeathP1 && flipPlayer == 1 || flipOnDeathBoth) {
+                if (flipOnDeathLogicP1 || flipOnDeathSwift) {
+                    queueButton((int)PlayerButton::Jump, true, false ^
+                    GameManager::sharedState()->getGameVariable(GameVar::Flip2PlayerControls),0.0);
+                }
+                flipPlayer = 0;
+                flipOnDeathLogicP1 = !flipOnDeathLogicP1;
+            }
+            if (flipOnDeathP2 && flipPlayer == 2 || flipOnDeathBoth) {
+                if (flipOnDeathLogicP2 || flipOnDeathSwift) {
+                    queueButton((int)PlayerButton::Jump, true, true ^
+                    GameManager::sharedState()->getGameVariable(GameVar::Flip2PlayerControls),0.0);
+                }
+                flipPlayer = 0;
+                flipOnDeathLogicP2 = !flipOnDeathLogicP2;
+            }
+            this->processQueuedButtons(0, true);
+            if (flipOnDeathUnfreeze)
+                PostMessage(hwnd, WM_KEYDOWN, 0x56, 0);
+                PostMessage(hwnd, WM_KEYUP, 0x56, 0);
+        }
+    }
+
+    static void onModify(auto& self) {
+        if (!self.setHookPriorityPre("PlayLayer::resetLevel", Priority::First)) {
+            geode::log::warn("Failed to set hook priority.");
+        }
     }
 
     void applyStartFade() {

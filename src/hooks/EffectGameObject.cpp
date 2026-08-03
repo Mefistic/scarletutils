@@ -3,7 +3,7 @@
 
 using namespace geode::prelude;
 
-class $modify(ScarletUtilsEGObjHook, EffectGameObject) {
+class $modify(ScarletEffectGameObject, EffectGameObject) {
     void playTriggerEffect() {
         if (noEffect)
             return;

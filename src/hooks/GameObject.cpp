@@ -1,7 +1,7 @@
 #include "../includes.hpp"
 #include <Geode/modify/GameObject.hpp>
 
-class $modify(ScarletUtilsGObjHook, GameObject) {
+class $modify(ScarletGameObject, GameObject) {
     void addGlow(gd::string frame) {
         GameObject::addGlow(std::move(frame));
         if (!PlayLayer::get() || !layoutMode) return;

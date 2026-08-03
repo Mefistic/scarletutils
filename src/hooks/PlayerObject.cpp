@@ -3,7 +3,7 @@
 
 using namespace geode::prelude;
 
-class $modify(ScarletUtilsPObjHook, PlayerObject) {
+class $modify(ScarletPlayerObject, PlayerObject) {
     void spawnPortalCircle(ccColor3B color, float startRadius) {
         if (noEffect)
             return;
@@ -48,10 +48,19 @@ class $modify(ScarletUtilsPObjHook, PlayerObject) {
         PlayerObject::playDeathEffect();
     }
 
-    void stopDashing() {
-        if (noEffect)
-            m_dashFireSprite->setScale(0.f);
+    void startDashing(DashRingObject* object) {
+        if (noEffect) {
+            m_playEffects = false;
+            m_dashFireSprite->setDontDraw(true);
+        }
+        PlayerObject::startDashing(object);
+    }
 
+    void stopDashing() {
+        if (noEffect) {
+            m_playEffects = false;
+            m_dashFireSprite->setDontDraw(true);
+        }
         PlayerObject::stopDashing();
     }
     void playSpiderDashEffect(CCPoint from, CCPoint to) {

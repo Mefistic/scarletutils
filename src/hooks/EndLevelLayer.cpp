@@ -3,7 +3,7 @@
 
 using namespace geode::prelude;
 
-class $modify(ScarletUtilsELLHook, EndLevelLayer) {
+class $modify(ScarletEndLevelLayer, EndLevelLayer) {
     void showLayer(bool instant) {
         if (hideEndscreen)
             return;
