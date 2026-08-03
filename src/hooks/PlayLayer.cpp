@@ -76,9 +76,11 @@ class $modify(ScarletPlayLayer, PlayLayer) {
                 flipOnDeathLogicP2 = !flipOnDeathLogicP2;
             }
             this->processQueuedButtons(0, true);
+            #ifdef GEODE_IS_WINDOWS
             if (flipOnDeathUnfreeze)
                 PostMessage(hwnd, WM_KEYDOWN, 0x56, 0);
                 PostMessage(hwnd, WM_KEYUP, 0x56, 0);
+            #endif
         }
     }
 
