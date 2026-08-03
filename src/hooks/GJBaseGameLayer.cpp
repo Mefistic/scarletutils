@@ -8,16 +8,16 @@ using namespace geode::prelude;
 
 class $modify(ScarletGJBaseGameLayer, GJBaseGameLayer) {
     void runMaintainGravity() {
-        bool p1maintain = m_player1->m_holdingButtons[1] != m_player1->m_isUpsideDown;
-        bool p2maintain = m_player2->m_holdingButtons[1] != m_player2->m_isUpsideDown;
-
-        bool p1holding = m_uiLayer->m_p1Jumping;
-        bool p2holding = m_uiLayer->m_p2Jumping;
-
-        if (GameManager::sharedState()->getGameVariable(GameVar::Flip2PlayerControls))
-            std::swap(p1holding, p2holding);
-
         if (maintainGravity) {
+            bool p1maintain = m_player1->m_holdingButtons[1] != m_player1->m_isUpsideDown;
+            bool p2maintain = m_player2->m_holdingButtons[1] != m_player2->m_isUpsideDown;
+
+            bool p1holding = m_uiLayer->m_p1Jumping;
+            bool p2holding = m_uiLayer->m_p2Jumping;
+
+            if (GameManager::sharedState()->getGameVariable(GameVar::Flip2PlayerControls))
+                std::swap(p1holding, p2holding);
+
             m_queuedButtons.clear();
 
             if ((p1holding || (autoclickerHoldingP1 && autoclickerP1)) != p1maintain) {
@@ -170,9 +170,10 @@ class $modify(ScarletGJBaseGameLayer, GJBaseGameLayer) {
     void processQueuedButtons(float dt, bool clearInputQueue) {
         runMaintainGravity();
         bool didReleaseGravityOrb = false;
-        for (auto button : m_queuedButtons) {
+        auto copy = m_queuedButtons;
+        for (auto button : copy) {
             auto player = button.m_isPlayer2 ^ GameManager::sharedState()->getGameVariable(
-                GameVar::Flip2PlayerControls) ? m_player2 : m_player1;
+            GameVar::Flip2PlayerControls) ? m_player2 : m_player1;
 
             if (autoSwift || releaseGravityOrbsPrevent) {
                 m_queuedButtons.erase(
@@ -185,7 +186,7 @@ class $modify(ScarletGJBaseGameLayer, GJBaseGameLayer) {
 
             if (button.m_isPush) {
                 PlayerButtonCommand fakeInput;
-                fakeInput.m_isPlayer2 = player->isPlayer2();
+                fakeInput.m_isPlayer2 = button.m_isPlayer2;
                 fakeInput.m_button = PlayerButton::Jump;
                 fakeInput.m_step = 0;
                 fakeInput.m_timestamp = 0.0;
@@ -193,13 +194,15 @@ class $modify(ScarletGJBaseGameLayer, GJBaseGameLayer) {
 
                 for (auto i = 0; i < index; i++) {
                     auto orb = static_cast<RingObject*>(player->m_touchingRings->objectAtIndex(i));
+                    log::info("is player 2: {}", button.m_isPlayer2);
+                    log::info("orbs: {}", orb->m_objectID);
+                    log::info("queue size: {}", m_queuedButtons.size());
                     if (orb->m_objectType == GameObjectType::DashRing && clickGreenDash) {
                         fakeInput.m_isPush = false;
                         m_queuedButtons.insert(m_queuedButtons.begin(), fakeInput);
 
                         fakeInput.m_isPush = true;
                         m_queuedButtons.insert(m_queuedButtons.begin(), fakeInput);
-                        continue;
                     } else break;
                 }
 
@@ -214,16 +217,15 @@ class $modify(ScarletGJBaseGameLayer, GJBaseGameLayer) {
                             
                             fakeInput.m_isPush = true;
                             m_queuedButtons.insert(m_queuedButtons.begin(), fakeInput);
-                            continue;
                         }
                     } else break;
                 }
 
                 for (auto i = 0; i < index; i++) {
                     auto orb = static_cast<RingObject*>(player->m_touchingRings->objectAtIndex(i));
-                    if (orb->m_objectType == GameObjectType::GravityDashRing ||
+                    if ((orb->m_objectType == GameObjectType::GravityDashRing ||
                         orb->m_objectType == GameObjectType::GravityRing ||
-                        orb->m_objectType == GameObjectType::GreenRing &&
+                        orb->m_objectType == GameObjectType::GreenRing) &&
                         maintainGravity && !didReleaseGravityOrb) {
 
                             fakeInput.m_isPush = false;

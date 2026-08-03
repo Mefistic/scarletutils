@@ -14,12 +14,12 @@ class $modify(ScarletPlayerObject, PlayerObject) {
     void propellPlayer(float yVelocity, bool noEffects, int objectType) {
         if (objectType == 10) {
             if (!clickedJumpPad && clickGravityPads) {
-                GJBaseGameLayer::get()->queueButton(
-                    1,
-                    true,
-                    this->m_isSecondPlayer ^ GameManager::sharedState()->getGameVariable(GameVar::Flip2PlayerControls),
-                    0.0
-                );
+                GJBaseGameLayer::get()->queueButton((int)PlayerButton::Jump, true,
+                this->m_isSecondPlayer ^ GameManager::sharedState()->getGameVariable(
+                GameVar::Flip2PlayerControls), 0.0);
+                GJBaseGameLayer::get()->queueButton((int)PlayerButton::Jump, false,
+                this->m_isSecondPlayer ^ GameManager::sharedState()->getGameVariable(
+                GameVar::Flip2PlayerControls), 0.0);
                 clickedJumpPad = true;
             }
         }
@@ -29,12 +29,12 @@ class $modify(ScarletPlayerObject, PlayerObject) {
     void bumpPlayer(float bumpMod, int objectType, bool noEffects, GameObject* object) {
         if (objectType == 9 || objectType == 8 || objectType == 34) {
             if (!clickedJumpPad && clickJumpPads) {
-                GJBaseGameLayer::get()->queueButton(
-                    1,
-                    true,
-                    this->m_isSecondPlayer ^ GameManager::sharedState()->getGameVariable(GameVar::Flip2PlayerControls),
-                    0.0
-                );
+                GJBaseGameLayer::get()->queueButton((int)PlayerButton::Jump, true,
+                this->m_isSecondPlayer ^ GameManager::sharedState()->getGameVariable(
+                GameVar::Flip2PlayerControls), 0.0);
+                GJBaseGameLayer::get()->queueButton((int)PlayerButton::Jump, false,
+                this->m_isSecondPlayer ^ GameManager::sharedState()->getGameVariable(
+                GameVar::Flip2PlayerControls), 0.0);
                 clickedJumpPad = true;
             }
         }
