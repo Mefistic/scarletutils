@@ -5,9 +5,7 @@ using namespace geode::prelude;
 
 class $modify(ScarletEffectGameObject, EffectGameObject) {
     void playTriggerEffect() {
-        if (noEffect)
-            return;
-
+        if (!noEffect)
         EffectGameObject::playTriggerEffect();
     }
 };

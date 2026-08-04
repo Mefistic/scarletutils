@@ -1,4 +1,5 @@
 #include "../includes.hpp"
+#include "Geode/cocos/sprite_nodes/CCSprite.h"
 #include <Geode/modify/PauseLayer.hpp>
 
 using namespace geode::prelude;
@@ -8,9 +9,8 @@ class $modify(ScarletUtilsPauseLayerHook, PauseLayer)
     void customSetup() {
         PauseLayer::customSetup();
 
-        auto buttonLabel = CCLabelBMFont::create("Scarlet\nUtils", "goldFont.fnt");
         auto btn = CCMenuItemSpriteExtra::create(
-            CircleButtonSprite::create(buttonLabel),
+            CCSprite::create("logo-button.png"_spr),
             this,
             menu_selector(ScarletUtilsPauseLayerHook::onButton)
         );

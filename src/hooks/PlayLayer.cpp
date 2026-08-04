@@ -147,16 +147,12 @@ class $modify(ScarletPlayLayer, PlayLayer) {
     }
 
     void showNewBest(bool newReward, int orbs, int diamonds, bool demonKey, bool noRetry, bool noTitle) {
-        if (hideNewBest)
-            return;
-
+        if (!hideNewBest)
         PlayLayer::showNewBest(newReward, orbs, diamonds, demonKey, noRetry, noTitle);
     }
 
     void playGravityEffect(bool flip) {
-        if (noEffect)
-            return;
-
+        if (!noEffect)
         PlayLayer::playGravityEffect(flip);
     }
 };
