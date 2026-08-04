@@ -6,6 +6,8 @@ using namespace geode::prelude;
 #ifdef GEODE_IS_WINDOWS
 extern HWND hwnd;
 #endif
+extern bool menuVisible;
+
 extern bool preventDeath;
 extern bool noDeathEffect;
 extern bool hideEndscreen;
