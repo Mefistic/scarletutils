@@ -5,7 +5,13 @@ using namespace geode::prelude;
 
 class $modify(ScarletPlayLayer, PlayLayer) {
     void addObject(GameObject* object) {
-        if (!layoutMode || !PlayLayer::get())
+        if (!PlayLayer::get())
+            return PlayLayer::addObject(object);
+
+        if (noEffect && object->m_objectType != GameObjectType::InverseMirrorPortal && object->m_objectType != GameObjectType::NormalMirrorPortal)
+            object->m_hasNoEffects = true;
+
+        if (!layoutMode)
             return PlayLayer::addObject(object);
 
         if (filter.contains(object->m_objectID)) {
@@ -25,12 +31,9 @@ class $modify(ScarletPlayLayer, PlayLayer) {
         object->m_ignoreFade = true;
         object->m_ignoreEnter = true;
         object->m_hasParticles = false;
-        object->m_hasNoParticles = true;
-        object->m_hasNoEffects = false;
         object->setOpacity(255);
-
-        if (noEffect && object->m_objectType != GameObjectType::InverseMirrorPortal && object->m_objectType != GameObjectType::NormalMirrorPortal)
-            object->m_hasNoEffects = true;
+        if (!noEffect)
+            object->m_hasNoEffects = false;
 
         PlayLayer::addObject(object);
     }

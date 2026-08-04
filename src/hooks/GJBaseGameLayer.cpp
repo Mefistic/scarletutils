@@ -194,9 +194,6 @@ class $modify(ScarletGJBaseGameLayer, GJBaseGameLayer) {
 
                 for (auto i = 0; i < index; i++) {
                     auto orb = static_cast<RingObject*>(player->m_touchingRings->objectAtIndex(i));
-                    log::info("is player 2: {}", button.m_isPlayer2);
-                    log::info("orbs: {}", orb->m_objectID);
-                    log::info("queue size: {}", m_queuedButtons.size());
                     if (orb->m_objectType == GameObjectType::DashRing && clickGreenDash) {
                         fakeInput.m_isPush = false;
                         m_queuedButtons.insert(m_queuedButtons.begin(), fakeInput);

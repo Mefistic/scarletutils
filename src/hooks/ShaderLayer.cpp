@@ -3,8 +3,7 @@
 
 class $modify(ScarletShaderLayer, ShaderLayer) {
     void performCalculations() {
-        if (layoutMode) return;
-
+        if (!layoutMode)
         ShaderLayer::performCalculations();
     }
 };

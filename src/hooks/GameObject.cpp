@@ -6,15 +6,11 @@ class $modify(ScarletGameObject, GameObject) {
         GameObject::addGlow(std::move(frame));
         if (!PlayLayer::get() || !layoutMode) return;
         
-        if ((m_objectType == GameObjectType::Decoration && m_objectID != 44 && m_objectID != 38 && m_objectID != 749 && m_objectID != 747) || m_isNoTouch || decoration.contains(m_objectID))
-            m_isHide = true;
-        else
-            m_isHide = false;
+        m_isHide = ((m_objectType == GameObjectType::Decoration && m_objectID != 44 && m_objectID != 38 && m_objectID != 749 && m_objectID != 747) || m_isNoTouch || decoration.contains(m_objectID));
     }
 
     void playShineEffect() {
-        if (noEffect) return;
-
+        if (!noEffect)
         GameObject::playShineEffect();
     }
 };

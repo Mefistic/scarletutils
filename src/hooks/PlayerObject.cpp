@@ -42,31 +42,29 @@ class $modify(ScarletPlayerObject, PlayerObject) {
     }
 
     void playDeathEffect() {
-        if (noDeathEffect)
-            return;
-
+        if (!noDeathEffect)
         PlayerObject::playDeathEffect();
     }
 
     void startDashing(DashRingObject* object) {
         if (noEffect) {
-            m_playEffects = false;
             m_dashFireSprite->setDontDraw(true);
+            m_dashFireSprite->setOpacity(0);
+            m_dashFireSprite->setScale(0);
         }
         PlayerObject::startDashing(object);
     }
 
     void stopDashing() {
         if (noEffect) {
-            m_playEffects = false;
             m_dashFireSprite->setDontDraw(true);
+            m_dashFireSprite->setOpacity(0);
+            m_dashFireSprite->setScale(0);
         }
         PlayerObject::stopDashing();
     }
     void playSpiderDashEffect(CCPoint from, CCPoint to) {
-        if (noEffect)
-            return;
-
+        if (!noEffect)
         PlayerObject::playSpiderDashEffect(from, to);
     }
 };

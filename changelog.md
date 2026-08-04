@@ -1,5 +1,22 @@
 # Changelog
 
+# 2.4.2
+- New logo
+- Added mobile support
+- Added a pause menu button to open the GUI
+- Fixed a bug where no effects unlinked dual gravity
+- Fixed a bug where layout mode would impede no effects from functioning properly
+
+# 2.4.1
+- Bugfixes
+- A lot of them.
+
+# v2.4.0
+## Changed:
+- Numerous bugfixes
+- Flip Input On Death re-added
+- Cosmetic changes
+
 # v2.3.4
 ## Changed:
 - Codebase reorganization

@@ -5,9 +5,7 @@ using namespace geode::prelude;
 
 class $modify(ScarletEndLevelLayer, EndLevelLayer) {
     void showLayer(bool instant) {
-        if (hideEndscreen)
-            return;
-
+        if (!hideEndscreen)
         EndLevelLayer::showLayer(instant);
     }
 };
