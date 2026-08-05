@@ -193,7 +193,7 @@ class $modify(ScarletGJBaseGameLayer, GJBaseGameLayer) {
 };
 
 $execute {
-    SU::UpdateHook::preTps([](bool isHalfTick) {
+    ScarletUtils::UpdateHook::preTps([](bool isHalfTick) {
         auto bgl = GJBaseGameLayer::get();
         if (layoutMode)
             bgl->toggleGlitter(false);
