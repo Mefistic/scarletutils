@@ -90,11 +90,6 @@ extern bool blackOrbUfo;
 
 extern bool releaseGravityOrbsPrevent;
 
-extern bool preventDeath;
-extern std::deque<CheckpointObject*> storedFrames;
-extern bool isBackstep;
-extern bool isBackstepCheckpoint;
-
 extern cocos2d::CCLayerColor* m_startFadeLayer;
 extern cocos2d::CCLayerColor* m_endFadeLayer;
 

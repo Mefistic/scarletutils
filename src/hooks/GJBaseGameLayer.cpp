@@ -1,6 +1,9 @@
 #include "../includes.hpp"
+#include "../updater/updater.hpp"
+#include "Geode/DefaultInclude.hpp"
 #include <Geode/Enums.hpp>
 #include <Geode/binding/CheckpointObject.hpp>
+#include <Geode/binding/GJBaseGameLayer.hpp>
 #include <Geode/binding/LevelEditorLayer.hpp>
 #include <Geode/binding/PlayLayer.hpp>
 #include <Geode/binding/PlayerButtonCommand.hpp>
@@ -8,171 +11,39 @@
 
 using namespace geode::prelude;
 
-class $modify(ScarletGJBaseGameLayer, GJBaseGameLayer) {
-    void runMaintainGravity() {
-        if (maintainGravity) {
-            bool p1maintain = m_player1->m_holdingButtons[1] != m_player1->m_isUpsideDown;
-            bool p2maintain = m_player2->m_holdingButtons[1] != m_player2->m_isUpsideDown;
+void runMaintainGravity() {
+    auto bgl = GJBaseGameLayer::get();
+    if (maintainGravity) {
+        bool p1maintain = bgl->m_player1->m_holdingButtons[1] != bgl->m_player1->m_isUpsideDown;
+        bool p2maintain = bgl->m_player2->m_holdingButtons[1] != bgl->m_player2->m_isUpsideDown;
 
-            bool p1holding = m_uiLayer->m_p1Jumping;
-            bool p2holding = m_uiLayer->m_p2Jumping;
+        bool p1holding = bgl->m_uiLayer->m_p1Jumping;
+        bool p2holding = bgl->m_uiLayer->m_p2Jumping;
 
-            if (GameManager::sharedState()->getGameVariable(GameVar::Flip2PlayerControls))
-                std::swap(p1holding, p2holding);
+        if (GameManager::sharedState()->getGameVariable(GameVar::Flip2PlayerControls))
+            std::swap(p1holding, p2holding);
 
-            m_queuedButtons.clear();
+        bgl->m_queuedButtons.clear();
 
-            if ((p1holding || (autoclickerHoldingP1 && autoclickerP1)) != p1maintain) {
-                queueButton((int)PlayerButton::Jump, !m_player1->m_holdingButtons[1],
-                GameManager::sharedState()->getGameVariable(GameVar::Flip2PlayerControls), 0.0);
-                autoclickerTimerP1 = INT32_MAX;
-            }
+        if ((p1holding || (autoclickerHoldingP1 && autoclickerP1)) != p1maintain) {
+            bgl->queueButton((int)PlayerButton::Jump, !bgl->m_player1->m_holdingButtons[1],
+            GameManager::sharedState()->getGameVariable(GameVar::Flip2PlayerControls), 0.0);
+            autoclickerTimerP1 = INT32_MAX;
+        }
 
-            if ((p2holding || (autoclickerHoldingP2 && autoclickerP2)) != p2maintain &&
-                m_gameState.m_isDualMode && m_levelSettings->m_twoPlayerMode) {
-                queueButton((int)PlayerButton::Jump, !m_player2->m_holdingButtons[1],
-                !GameManager::sharedState()->getGameVariable(GameVar::Flip2PlayerControls), 0.0);
-                autoclickerTimerP2 = INT32_MAX;
-            }
+        if ((p2holding || (autoclickerHoldingP2 && autoclickerP2)) != p2maintain &&
+            bgl->m_gameState.m_isDualMode && bgl->m_levelSettings->m_twoPlayerMode) {
+            bgl->queueButton((int)PlayerButton::Jump, !bgl->m_player2->m_holdingButtons[1],
+            !GameManager::sharedState()->getGameVariable(GameVar::Flip2PlayerControls), 0.0);
+            autoclickerTimerP2 = INT32_MAX;
         }
     }
+}
 
+class $modify(ScarletGJBaseGameLayer, GJBaseGameLayer) {
     void processCommands(float dt, bool isHalfTick, bool isLastTick) {
-        if (layoutMode)
-            toggleGlitter(false);
-        clickedJumpPad = false;
-
-        if (straightUfo) {
-            if (straightUfoP1 &&
-                ((m_player1->getPositionY() < straightUfoTargetP1 - straightUfoThresholdP1 &&
-                  m_player1->m_yVelocity <= 0 && !m_player1->m_isUpsideDown) ||
-                 (m_player1->getPositionY() > straightUfoTargetP1 + straightUfoThresholdP1 &&
-                  m_player1->m_yVelocity > 0 && !m_player1->m_isUpsideDown) ||
-                 (m_player1->getPositionY() > straightUfoTargetP1 + straightUfoThresholdP1 &&
-                  m_player1->m_yVelocity >= 0 && m_player1->m_isUpsideDown) ||
-                 (m_player1->getPositionY() < straightUfoTargetP1 - straightUfoThresholdP1 &&
-                  m_player1->m_yVelocity < 0 && m_player1->m_isUpsideDown))) {
-                queueButton((int)PlayerButton::Jump, false,
-                GameManager::sharedState()->getGameVariable(GameVar::Flip2PlayerControls),0.0);
-                queueButton((int)PlayerButton::Jump, true,
-                GameManager::sharedState()->getGameVariable(GameVar::Flip2PlayerControls),0.0);
-            }
-
-            if (straightUfoP2 &&
-                ((m_player2->getPositionY() < straightUfoTargetP2 - straightUfoThresholdP2 &&
-                  m_player2->m_yVelocity <= 0 && !m_player2->m_isUpsideDown) ||
-                 (m_player2->getPositionY() > straightUfoTargetP2 + straightUfoThresholdP2 &&
-                  m_player2->m_yVelocity > 0 && !m_player2->m_isUpsideDown) ||
-                 (m_player2->getPositionY() > straightUfoTargetP2 + straightUfoThresholdP2 &&
-                  m_player2->m_yVelocity >= 0 && m_player2->m_isUpsideDown) ||
-                 (m_player2->getPositionY() < straightUfoTargetP2 - straightUfoThresholdP2 &&
-                  m_player2->m_yVelocity < 0 && m_player2->m_isUpsideDown))) {
-                queueButton((int)PlayerButton::Jump, false,
-                !GameManager::sharedState()->getGameVariable(GameVar::Flip2PlayerControls),0.0);
-                queueButton((int)PlayerButton::Jump, true,
-                !GameManager::sharedState()->getGameVariable(GameVar::Flip2PlayerControls),0.0);
-            }
-        }
-
-        if (straightFly) {
-            if (straightFlyP1 &&
-                ((m_player1->getYVelocity() < -straightFlyThresholdP1 &&
-                  !m_player1->m_holdingButtons[1] && !m_player1->m_isUpsideDown) ||
-                 (m_player1->getYVelocity() > straightFlyThresholdP1 &&
-                  m_player1->m_holdingButtons[1] && !m_player1->m_isUpsideDown) ||
-                 (m_player1->getYVelocity() > straightFlyThresholdP1 &&
-                  !m_player1->m_holdingButtons[1] && m_player1->m_isUpsideDown) ||
-                 (m_player1->getYVelocity() < -straightFlyThresholdP1 &&
-                  m_player1->m_holdingButtons[1] && m_player1->m_isUpsideDown)))
-                queueButton((int)PlayerButton::Jump, !m_player1->m_holdingButtons[1],
-                GameManager::sharedState()->getGameVariable(GameVar::Flip2PlayerControls),0.0);
-
-            if (straightFlyP2 &&
-                ((m_player2->getYVelocity() < -straightFlyThresholdP2 &&
-                  !m_player2->m_holdingButtons[1] && !m_player2->m_isUpsideDown) ||
-                 (m_player2->getYVelocity() > straightFlyThresholdP2 &&
-                  m_player2->m_holdingButtons[1] && !m_player2->m_isUpsideDown) ||
-                 (m_player2->getYVelocity() > straightFlyThresholdP2 &&
-                  !m_player2->m_holdingButtons[1] && m_player2->m_isUpsideDown) ||
-                 (m_player2->getYVelocity() < -straightFlyThresholdP2 &&
-                  m_player2->m_holdingButtons[1] && m_player2->m_isUpsideDown)))
-                queueButton((int)PlayerButton::Jump, !m_player2->m_holdingButtons[1],
-                !GameManager::sharedState()->getGameVariable(GameVar::Flip2PlayerControls),0.0);
-        }
-
-        if (autoclickerP1) {
-            if (autoclickerHoldingP1 && autoclickerTimerP1 >= autoclickerHoldP1) {
-                if (!autoclickerSwiftP1)
-                    queueButton((int)PlayerButton::Jump, false,
-                    GameManager::sharedState()->getGameVariable(GameVar::Flip2PlayerControls), 0.0);
-                else {
-                    queueButton((int)PlayerButton::Jump, true,
-                    GameManager::sharedState()->getGameVariable(GameVar::Flip2PlayerControls), 0.0);
-                    queueButton((int)PlayerButton::Jump, false,
-                    GameManager::sharedState()->getGameVariable(GameVar::Flip2PlayerControls), 0.0);
-                }
-                autoclickerHoldingP1 = false;
-                autoclickerTimerP1 = 0;
-            }
-            if (!autoclickerHoldingP1 && autoclickerTimerP1 >= autoclickerEveryP1) {
-                if (!autoclickerSwiftP1)
-                    queueButton((int)PlayerButton::Jump, true,
-                    GameManager::sharedState()->getGameVariable(GameVar::Flip2PlayerControls), 0.0);
-                else {
-                    queueButton((int)PlayerButton::Jump, true,
-                    GameManager::sharedState()->getGameVariable(GameVar::Flip2PlayerControls), 0.0);
-                    queueButton((int)PlayerButton::Jump, false,
-                    GameManager::sharedState()->getGameVariable(GameVar::Flip2PlayerControls), 0.0);
-                }
-                autoclickerHoldingP1 = true;
-                autoclickerTimerP1 = 0;
-            }
-            autoclickerTimerP1++;
-        }
-        if (autoclickerP2) {
-            if (autoclickerHoldingP2 && autoclickerTimerP2 >= autoclickerHoldP2) {
-                if (!autoclickerSwiftP2)
-                    queueButton((int)PlayerButton::Jump, false,
-                    !GameManager::sharedState()->getGameVariable(GameVar::Flip2PlayerControls), 0.0);
-                else {
-                    queueButton((int)PlayerButton::Jump, true,
-                    !GameManager::sharedState()->getGameVariable(GameVar::Flip2PlayerControls), 0.0);
-                    queueButton((int)PlayerButton::Jump, false,
-                    !GameManager::sharedState()->getGameVariable(GameVar::Flip2PlayerControls), 0.0);
-                }
-                autoclickerHoldingP2 = false;
-                autoclickerTimerP2 = 0;
-            }
-            if (!autoclickerHoldingP2 && autoclickerTimerP2 >= autoclickerEveryP2) {
-                if (!autoclickerSwiftP2)
-                    queueButton((int)PlayerButton::Jump, true,
-                    !GameManager::sharedState()->getGameVariable(GameVar::Flip2PlayerControls), 0.0);
-                else {
-                    queueButton((int)PlayerButton::Jump, true,
-                    !GameManager::sharedState()->getGameVariable(GameVar::Flip2PlayerControls), 0.0);
-                    queueButton((int)PlayerButton::Jump, false,
-                    !GameManager::sharedState()->getGameVariable(GameVar::Flip2PlayerControls), 0.0);
-                }
-                autoclickerHoldingP2 = true;
-                autoclickerTimerP2 = 0;
-            }
-            autoclickerTimerP2++;
-        }
-        
-        runMaintainGravity();
 
         GJBaseGameLayer::processCommands(dt, isHalfTick, isLastTick);
-        if (auto pl = PlayLayer::get()) {
-            if (preventDeath) {
-                isBackstepCheckpoint = true;
-                auto cp = pl->markCheckpoint();
-                if (cp) {
-                    storedFrames.push_back(cp);
-                    cp->m_physicalCheckpointObject->setVisible(false);
-                }
-                isBackstepCheckpoint = false;
-            }
-        }
     }
 
     void playExitDualEffect(PlayerObject* player) {
@@ -319,4 +190,132 @@ class $modify(ScarletGJBaseGameLayer, GJBaseGameLayer) {
         #endif
         GJBaseGameLayer::handleButton(down, button, isPlayer1);
     }
+};
+
+$execute {
+    SU::UpdateHook::preTps([](bool isHalfTick) {
+        auto bgl = GJBaseGameLayer::get();
+        if (layoutMode)
+            bgl->toggleGlitter(false);
+        clickedJumpPad = false;
+
+        if (straightUfo) {
+            if (straightUfoP1 &&
+                ((bgl->m_player1->getPositionY() < straightUfoTargetP1 - straightUfoThresholdP1 &&
+                  bgl->m_player1->m_yVelocity <= 0 && !bgl->m_player1->m_isUpsideDown) ||
+                 (bgl->m_player1->getPositionY() > straightUfoTargetP1 + straightUfoThresholdP1 &&
+                  bgl->m_player1->m_yVelocity > 0 && !bgl->m_player1->m_isUpsideDown) ||
+                 (bgl->m_player1->getPositionY() > straightUfoTargetP1 + straightUfoThresholdP1 &&
+                  bgl->m_player1->m_yVelocity >= 0 && bgl->m_player1->m_isUpsideDown) ||
+                 (bgl->m_player1->getPositionY() < straightUfoTargetP1 - straightUfoThresholdP1 &&
+                  bgl->m_player1->m_yVelocity < 0 && bgl->m_player1->m_isUpsideDown))) {
+                bgl->queueButton((int)PlayerButton::Jump, false,
+                GameManager::sharedState()->getGameVariable(GameVar::Flip2PlayerControls),0.0);
+                bgl->queueButton((int)PlayerButton::Jump, true,
+                GameManager::sharedState()->getGameVariable(GameVar::Flip2PlayerControls),0.0);
+            }
+
+            if (straightUfoP2 &&
+                ((bgl->m_player2->getPositionY() < straightUfoTargetP2 - straightUfoThresholdP2 &&
+                  bgl->m_player2->m_yVelocity <= 0 && !bgl->m_player2->m_isUpsideDown) ||
+                 (bgl->m_player2->getPositionY() > straightUfoTargetP2 + straightUfoThresholdP2 &&
+                  bgl->m_player2->m_yVelocity > 0 && !bgl->m_player2->m_isUpsideDown) ||
+                 (bgl->m_player2->getPositionY() > straightUfoTargetP2 + straightUfoThresholdP2 &&
+                  bgl->m_player2->m_yVelocity >= 0 && bgl->m_player2->m_isUpsideDown) ||
+                 (bgl->m_player2->getPositionY() < straightUfoTargetP2 - straightUfoThresholdP2 &&
+                  bgl->m_player2->m_yVelocity < 0 && bgl->m_player2->m_isUpsideDown))) {
+                bgl->queueButton((int)PlayerButton::Jump, false,
+                !GameManager::sharedState()->getGameVariable(GameVar::Flip2PlayerControls),0.0);
+                bgl->queueButton((int)PlayerButton::Jump, true,
+                !GameManager::sharedState()->getGameVariable(GameVar::Flip2PlayerControls),0.0);
+            }
+        }
+
+        if (straightFly) {
+            if (straightFlyP1 &&
+                ((bgl->m_player1->getYVelocity() < -straightFlyThresholdP1 &&
+                  !bgl->m_player1->m_holdingButtons[1] && !bgl->m_player1->m_isUpsideDown) ||
+                 (bgl->m_player1->getYVelocity() > straightFlyThresholdP1 &&
+                  bgl->m_player1->m_holdingButtons[1] && !bgl->m_player1->m_isUpsideDown) ||
+                 (bgl->m_player1->getYVelocity() > straightFlyThresholdP1 &&
+                  !bgl->m_player1->m_holdingButtons[1] && bgl->m_player1->m_isUpsideDown) ||
+                 (bgl->m_player1->getYVelocity() < -straightFlyThresholdP1 &&
+                  bgl->m_player1->m_holdingButtons[1] && bgl->m_player1->m_isUpsideDown)))
+                bgl->queueButton((int)PlayerButton::Jump, !bgl->m_player1->m_holdingButtons[1],
+                GameManager::sharedState()->getGameVariable(GameVar::Flip2PlayerControls),0.0);
+
+            if (straightFlyP2 &&
+                ((bgl->m_player2->getYVelocity() < -straightFlyThresholdP2 &&
+                  !bgl->m_player2->m_holdingButtons[1] && !bgl->m_player2->m_isUpsideDown) ||
+                 (bgl->m_player2->getYVelocity() > straightFlyThresholdP2 &&
+                  bgl->m_player2->m_holdingButtons[1] && !bgl->m_player2->m_isUpsideDown) ||
+                 (bgl->m_player2->getYVelocity() > straightFlyThresholdP2 &&
+                  !bgl->m_player2->m_holdingButtons[1] && bgl->m_player2->m_isUpsideDown) ||
+                 (bgl->m_player2->getYVelocity() < -straightFlyThresholdP2 &&
+                  bgl->m_player2->m_holdingButtons[1] && bgl->m_player2->m_isUpsideDown)))
+                bgl->queueButton((int)PlayerButton::Jump, !bgl->m_player2->m_holdingButtons[1],
+                !GameManager::sharedState()->getGameVariable(GameVar::Flip2PlayerControls),0.0);
+        }
+
+        if (autoclickerP1) {
+            if (autoclickerHoldingP1 && autoclickerTimerP1 >= autoclickerHoldP1) {
+                if (!autoclickerSwiftP1)
+                    bgl->queueButton((int)PlayerButton::Jump, false,
+                    GameManager::sharedState()->getGameVariable(GameVar::Flip2PlayerControls), 0.0);
+                else {
+                    bgl->queueButton((int)PlayerButton::Jump, true,
+                    GameManager::sharedState()->getGameVariable(GameVar::Flip2PlayerControls), 0.0);
+                    bgl->queueButton((int)PlayerButton::Jump, false,
+                    GameManager::sharedState()->getGameVariable(GameVar::Flip2PlayerControls), 0.0);
+                }
+                autoclickerHoldingP1 = false;
+                autoclickerTimerP1 = 0;
+            }
+            if (!autoclickerHoldingP1 && autoclickerTimerP1 >= autoclickerEveryP1) {
+                if (!autoclickerSwiftP1)
+                    bgl->queueButton((int)PlayerButton::Jump, true,
+                    GameManager::sharedState()->getGameVariable(GameVar::Flip2PlayerControls), 0.0);
+                else {
+                    bgl->queueButton((int)PlayerButton::Jump, true,
+                    GameManager::sharedState()->getGameVariable(GameVar::Flip2PlayerControls), 0.0);
+                    bgl->queueButton((int)PlayerButton::Jump, false,
+                    GameManager::sharedState()->getGameVariable(GameVar::Flip2PlayerControls), 0.0);
+                }
+                autoclickerHoldingP1 = true;
+                autoclickerTimerP1 = 0;
+            }
+            autoclickerTimerP1++;
+        }
+        if (autoclickerP2) {
+            if (autoclickerHoldingP2 && autoclickerTimerP2 >= autoclickerHoldP2) {
+                if (!autoclickerSwiftP2)
+                    bgl->queueButton((int)PlayerButton::Jump, false,
+                    !GameManager::sharedState()->getGameVariable(GameVar::Flip2PlayerControls), 0.0);
+                else {
+                    bgl->queueButton((int)PlayerButton::Jump, true,
+                    !GameManager::sharedState()->getGameVariable(GameVar::Flip2PlayerControls), 0.0);
+                    bgl->queueButton((int)PlayerButton::Jump, false,
+                    !GameManager::sharedState()->getGameVariable(GameVar::Flip2PlayerControls), 0.0);
+                }
+                autoclickerHoldingP2 = false;
+                autoclickerTimerP2 = 0;
+            }
+            if (!autoclickerHoldingP2 && autoclickerTimerP2 >= autoclickerEveryP2) {
+                if (!autoclickerSwiftP2)
+                    bgl->queueButton((int)PlayerButton::Jump, true,
+                    !GameManager::sharedState()->getGameVariable(GameVar::Flip2PlayerControls), 0.0);
+                else {
+                    bgl->queueButton((int)PlayerButton::Jump, true,
+                    !GameManager::sharedState()->getGameVariable(GameVar::Flip2PlayerControls), 0.0);
+                    bgl->queueButton((int)PlayerButton::Jump, false,
+                    !GameManager::sharedState()->getGameVariable(GameVar::Flip2PlayerControls), 0.0);
+                }
+                autoclickerHoldingP2 = true;
+                autoclickerTimerP2 = 0;
+            }
+            autoclickerTimerP2++;
+        }
+        
+        runMaintainGravity();
+    });
 };

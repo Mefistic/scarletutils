@@ -1,8 +1,7 @@
 # Changelog
 
 # 2.5.0
-- Added Prevent Death
-- Dropped MacOS support (for now)
+- Fixed MacOS
 
 # 2.4.2
 - New logo
