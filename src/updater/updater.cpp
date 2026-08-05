@@ -1,13 +1,11 @@
-// reason for updater is processCommands is inlined on mac :3
-// astrals solution was to make an updater that could select the right function to hook depending on device
+// macos fix by gwddos
 
 #include "updater.hpp"
 #include <Geode/modify/GJBaseGameLayer.hpp>
 
 using namespace geode::prelude;
 
-namespace SU::UpdateHook {
-    // Keep vectors internal to this translation unit with distinct names
+namespace ScarletUtils::UpdateHook {
     namespace {
         std::vector<std::function<void(bool)>> g_preTps;
         std::vector<std::function<void(bool)>> g_postTps;
@@ -25,22 +23,34 @@ namespace SU::UpdateHook {
     void latePostTps(std::function<void(bool)> func) {
         g_latePostTps.push_back(func);
     }
-} // namespace SU::UpdateHook
+}
 
-class $modify(AstralTPSHook, GJBaseGameLayer) {
+#ifdef GEODE_IS_MACOS
+static bool g_inBaseGameLayerUpdate = false;
+
+class $modify(GJBaseGameLayer) {
+    void update(float dt) {
+        g_inBaseGameLayerUpdate = true;
+        GJBaseGameLayer::update(dt);
+        g_inBaseGameLayerUpdate = false;
+    }
+};
+#endif
+
+class $modify(GJBaseGameLayer) {
 #ifndef GEODE_IS_MACOS
     void processCommands(float dt, bool isHalfTick, bool isLastTick) {
-        for (const auto& func : SU::UpdateHook::g_preTps) {
+        for (const auto& func : ScarletUtils::UpdateHook::g_preTps) {
             func(isHalfTick);
         }
 
         GJBaseGameLayer::processCommands(dt, isHalfTick, isLastTick);
 
-        for (const auto& func : SU::UpdateHook::g_postTps) {
+        for (const auto& func : ScarletUtils::UpdateHook::g_postTps) {
             func(isHalfTick);
         }
 
-        for (const auto& func : SU::UpdateHook::g_latePostTps) {
+        for (const auto& func : ScarletUtils::UpdateHook::g_latePostTps) {
             func(isHalfTick);
         }
     }
@@ -57,17 +67,17 @@ class $modify(AstralTPSHook, GJBaseGameLayer) {
 
         bool isHalfTick = m_isBetweenSteps;
 
-        for (const auto& func : SU::UpdateHook::g_preTps) {
+        for (const auto& func : ScarletUtils::UpdateHook::g_preTps) {
             func(isHalfTick);
         }
 
         GJBaseGameLayer::processQueuedButtons(dt, clearInputQueue);
 
-        for (const auto& func : SU::UpdateHook::g_postTps) {
+        for (const auto& func : ScarletUtils::UpdateHook::g_postTps) {
             func(isHalfTick);
         }
 
-        for (const auto& func : SU::UpdateHook::g_latePostTps) {
+        for (const auto& func : ScarletUtils::UpdateHook::g_latePostTps) {
             func(isHalfTick);
         }
     }
