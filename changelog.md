@@ -2,7 +2,6 @@
 
 # 2.4.2
 - New logo
-- Added mobile support
 - Added a pause menu button to open the GUI
 - Fixed a bug where no effects unlinked dual gravity
 - Fixed a bug where layout mode would impede no effects from functioning properly
