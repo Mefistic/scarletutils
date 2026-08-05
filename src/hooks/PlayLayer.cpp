@@ -57,10 +57,39 @@ class $modify(ScarletPlayLayer, PlayLayer) {
         autoclickerTimerP1 = INT_MAX;
         autoclickerHoldingP2 = false;
         autoclickerTimerP2 = INT_MAX;
+
+        if (preventDeath) {
+            isBackstep = true;
+            this->resetLevel();
+        }
     }
 
+    CheckpointObject* createCheckpoint() {
+        if (!isBackstepCheckpoint) {
+            for (int i = 0; i < storedFrames.size(); i++) {
+                this->removeCheckpoint(false);
+            }
+            storedFrames.clear();
+        }
+        
+        CheckpointObject* ret = PlayLayer::createCheckpoint();
+        return ret;
+    }
+
+
     void resetLevel() {
+        if (!isBackstep && preventDeath)
+            for (int i = 0; i < storedFrames.size(); i++) {
+                this->removeCheckpoint(false);
+            }
         PlayLayer::resetLevel();
+        if (isBackstep && preventDeath)
+            for (int i = 0; i < storedFrames.size(); i++) {
+                this->removeCheckpoint(false);
+            }
+        storedFrames.clear();
+        isBackstep = false;
+
         if (flipOnDeath && flipPlayer != 0) {
             if (flipOnDeathP1 && flipPlayer == 1 || flipOnDeathBoth) {
                 if (flipOnDeathLogicP1 || flipOnDeathSwift) {

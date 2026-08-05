@@ -2,6 +2,7 @@
 #include <Geode/Geode.hpp>
 #include "includes.hpp"
 #include <imgui-cocos.hpp>
+#include <imgui.h>
 
 using namespace geode::prelude;
 
@@ -9,7 +10,6 @@ using namespace geode::prelude;
 HWND hwnd = FindWindow(NULL, "Geometry Dash");
 #endif
 
-bool preventDeath   = Mod::get()->getSavedValue<bool>("preventDeath", false);
 bool noDeathEffect  = Mod::get()->getSavedValue<bool>("noDeathEffect", false);
 bool hideEndscreen  = Mod::get()->getSavedValue<bool>("hideEndscreen", false);
 bool hideNewBest    = Mod::get()->getSavedValue<bool>("hideNewBest", false);
@@ -93,6 +93,11 @@ bool layoutMode = false;
 bool blackOrbUfo = false;
 
 bool releaseGravityOrbsPrevent = false;
+
+bool preventDeath   = Mod::get()->getSavedValue<bool>("preventDeath", false);
+std::deque<CheckpointObject*> storedFrames;
+bool isBackstep = false;
+bool isBackstepCheckpoint = false;
 
 cocos2d::CCLayerColor* m_startFadeLayer = nullptr;
 cocos2d::CCLayerColor* m_endFadeLayer   = nullptr;
@@ -280,12 +285,16 @@ $on_mod(Loaded) {
         if (ImGui::BeginTabBar("main")) {
           if (ImGui::BeginTabItem("Gameplay")) {
 
+            ImGui::Checkbox("Prevent Death", &preventDeath);
+              if (ImGui::IsItemHovered()) {
+                ImGui::BeginTooltip();
+                ImGui::Text("Requires lock delta to be enabled.");
+                ImGui::EndTooltip();
+              }
+
             ImGui::Checkbox("Flip Input On Death", &flipOnDeath);
-            if (ImGui::IsItemHovered()) {
-              ImGui::BeginTooltip();
-              ImGui::Text("Requires Silicate; Enable Backwards Stepping and Prevent Death.");
-              ImGui::EndTooltip();
-            }
+            if (ImGui::IsItemEdited() && flipOnDeath) preventDeath = true;
+
             ImGui::SameLine();
             if (ImGui::ArrowButton("3y0", ImGuiDir_Right))
               ImGui::OpenPopup("flipOnDeath options");
@@ -295,14 +304,14 @@ $on_mod(Loaded) {
               ImGui::Checkbox("Player 2##flipOnDeath", &flipOnDeathP2);
               ImGui::Checkbox("Click Both##flipOnDeath", &flipOnDeathBoth);
               ImGui::Checkbox("Swift##flipOnDeath", &flipOnDeathSwift);
-              #ifdef GEODE_IS_WINDOWS
-              ImGui::Checkbox("Unfreeze##flipOnDeath", &flipOnDeathUnfreeze);
-              if (ImGui::IsItemHovered()) {
-                ImGui::BeginTooltip();
-                ImGui::Text("Requires frame advance toggle keybind to be set to V.");
-                ImGui::EndTooltip();
-              }
-              #endif
+              // #ifdef GEODE_IS_WINDOWS
+              // ImGui::Checkbox("Unfreeze##flipOnDeath", &flipOnDeathUnfreeze);
+              // if (ImGui::IsItemHovered()) {
+              //   ImGui::BeginTooltip();
+              //   ImGui::Text("Requires frame advance toggle keybind to be set to V.");
+              //   ImGui::EndTooltip();
+              // }
+              // #endif
               ImGui::EndPopup();
             }
 

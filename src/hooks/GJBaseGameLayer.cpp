@@ -1,6 +1,8 @@
 #include "../includes.hpp"
 #include <Geode/Enums.hpp>
+#include <Geode/binding/CheckpointObject.hpp>
 #include <Geode/binding/LevelEditorLayer.hpp>
+#include <Geode/binding/PlayLayer.hpp>
 #include <Geode/binding/PlayerButtonCommand.hpp>
 #include <Geode/modify/GJBaseGameLayer.hpp>
 
@@ -156,9 +158,21 @@ class $modify(ScarletGJBaseGameLayer, GJBaseGameLayer) {
             }
             autoclickerTimerP2++;
         }
-
+        
         runMaintainGravity();
+
         GJBaseGameLayer::processCommands(dt, isHalfTick, isLastTick);
+        if (auto pl = PlayLayer::get()) {
+            if (preventDeath) {
+                isBackstepCheckpoint = true;
+                auto cp = pl->markCheckpoint();
+                if (cp) {
+                    storedFrames.push_back(cp);
+                    cp->m_physicalCheckpointObject->setVisible(false);
+                }
+                isBackstepCheckpoint = false;
+            }
+        }
     }
 
     void playExitDualEffect(PlayerObject* player) {

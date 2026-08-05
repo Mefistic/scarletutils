@@ -5,9 +5,7 @@ using namespace geode::prelude;
 
 class $modify(ScarletPlayerObject, PlayerObject) {
     void spawnPortalCircle(ccColor3B color, float startRadius) {
-        if (noEffect)
-            return;
-
+        if (!noEffect)
         PlayerObject::spawnPortalCircle(color, startRadius);
     }
 

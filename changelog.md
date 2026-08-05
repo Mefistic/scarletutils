@@ -1,5 +1,9 @@
 # Changelog
 
+# 2.5.0
+- Added Prevent Death
+- Dropped MacOS support (for now)
+
 # 2.4.2
 - New logo
 - Added a pause menu button to open the GUI
