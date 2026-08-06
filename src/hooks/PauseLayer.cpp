@@ -1,5 +1,4 @@
 #include "../includes.hpp"
-#include "Geode/cocos/sprite_nodes/CCSprite.h"
 #include <Geode/modify/PauseLayer.hpp>
 
 using namespace geode::prelude;

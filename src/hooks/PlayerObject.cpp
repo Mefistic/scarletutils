@@ -1,4 +1,6 @@
 #include "../includes.hpp"
+#include <Geode/Enums.hpp>
+#include <Geode/binding/RingObject.hpp>
 #include <Geode/modify/PlayerObject.hpp>
 
 using namespace geode::prelude;
@@ -45,36 +47,27 @@ class $modify(ScarletPlayerObject, PlayerObject) {
     }
 
     void startDashing(DashRingObject* object) {
-        if (noEffect) {
+        static int lastOrb;
+        if (noEffect || (optimizeStackedOrbs && optimizeStartDashing && lastOrb == object->m_objectID)) {
             auto og = this->m_playEffects;
             this->m_playEffects = false;
             PlayerObject::startDashing(object);
             this->m_playEffects = og;
-            return;
-        } else
-        PlayerObject::startDashing(object);
+        }
+        else PlayerObject::startDashing(object);
+        optimizeStartDashing = true;
+        lastOrb = object->m_objectID;
     }
 
     void stopDashing() {
-        if (noEffect) {
+        if (noEffect || (optimizeStackedOrbs && optimizeStopDashing)) {
             auto og = this->m_maybeReducedEffects;
             this->m_maybeReducedEffects = true;
             PlayerObject::stopDashing();
             this->m_maybeReducedEffects = og;
-            return;
         }
-        PlayerObject::stopDashing();
-    }
-
-    void ringJump(RingObject* object, bool skipCheck) {
-        if (noEffect) {
-            auto og = this->m_playEffects;
-            this->m_playEffects = true;
-            PlayerObject::ringJump(object, skipCheck);
-            this->m_playEffects = og;
-            return;
-        }
-        PlayerObject::ringJump(object, skipCheck);
+        else PlayerObject::stopDashing();
+        optimizeStopDashing = true;
     }
 
     void playSpiderDashEffect(CCPoint from, CCPoint to) {

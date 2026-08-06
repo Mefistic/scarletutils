@@ -13,11 +13,11 @@ extern bool hideEndscreen;
 extern bool hideNewBest;
 extern bool noEffect;
 
-extern bool   fadeLevel;
+extern bool fadeLevel;
 extern double fadeLevelInDuration;
 extern double fadeLevelOutDuration;
 
-extern bool   fadeAudio;
+extern bool fadeAudio;
 extern double fadeAudioInDuration;
 extern double fadeAudioOutDuration;
 
@@ -70,8 +70,8 @@ extern int autoclickerEveryP2;
 extern int autoclickerHoldP1;
 extern int autoclickerHoldP2;
 
-extern int  autoclickerTimerP1;
-extern int  autoclickerTimerP2;
+extern int autoclickerTimerP1;
+extern int autoclickerTimerP2;
 extern bool autoclickerHoldingP1;
 extern bool autoclickerHoldingP2;
 
@@ -89,6 +89,7 @@ extern bool layoutMode;
 extern bool blackOrbUfo;
 
 extern bool releaseGravityOrbsPrevent;
+extern bool optimizeStackedOrbs;
 
 extern cocos2d::CCLayerColor* m_startFadeLayer;
 extern cocos2d::CCLayerColor* m_endFadeLayer;
@@ -98,3 +99,7 @@ cocos2d::ccColor3B floatToColor(float* col);
 
 extern std::unordered_set<int> decoration;
 extern std::unordered_set<int> filter;
+
+extern bool optimizeRingJump;
+extern bool optimizeStartDashing;
+extern bool optimizeStopDashing;

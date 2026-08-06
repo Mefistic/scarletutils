@@ -93,9 +93,14 @@ bool layoutMode = false;
 bool blackOrbUfo = false;
 
 bool releaseGravityOrbsPrevent = false;
+bool optimizeStackedOrbs = Mod::get()->getSavedValue<bool>("optimizeStackedOrbs", false);
 
 cocos2d::CCLayerColor* m_startFadeLayer = nullptr;
 cocos2d::CCLayerColor* m_endFadeLayer   = nullptr;
+
+bool optimizeRingJump = false;
+bool optimizeStartDashing = false;
+bool optimizeStopDashing = false;
 
 std::array<float, 3> colorToFloat(cocos2d::ccColor3B color) {
     return {
@@ -655,6 +660,16 @@ $on_mod(Loaded) {
               ImGui::Text("Useful for rendering levels that break on the first "
                           "attempt.");
               ImGui::EndTooltip();
+            }
+
+            ImGui::Checkbox("Stacked Orb Optimization", &optimizeStackedOrbs);
+            if (ImGui::IsItemHovered()) {
+              ImGui::BeginTooltip();
+              ImGui::Text("Clicking multiple orbs in a frame will only trigger one effect.");
+              ImGui::EndTooltip();
+            }
+            if (ImGui::IsItemEdited()) {
+              Mod::get()->setSavedValue<bool>("optimizeStackedOrbs", optimizeStackedOrbs);
             }
             ImGui::EndTabItem();
           }

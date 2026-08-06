@@ -192,6 +192,9 @@ $execute {
         if (layoutMode)
             bgl->toggleGlitter(false);
         clickedJumpPad = false;
+        optimizeRingJump = false;
+        optimizeStartDashing = false;
+        optimizeStopDashing = false;
 
         if (straightUfo) {
             if (straightUfoP1 &&
