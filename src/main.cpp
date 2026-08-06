@@ -126,23 +126,26 @@ std::unordered_set<int> filter = {2015, 15, 16, 17, 221, 743, 744, 899, 900, 915
 
 $on_mod(Loaded) {
   listenForKeybindSettingPresses(
-      "scarlet.utils/menu",
-      [](Keybind const &keybind, bool down, bool repeat, double timestamp) {
-        if (down && !repeat) {
-          menuVisible = !menuVisible;
-        }
-      });
+  "scarlet.utils/menu",
+  [](Keybind const &keybind, bool down, bool repeat, double timestamp) {
+    if (down && !repeat)
+      menuVisible = !menuVisible;
+    }
+  );
+
+  #ifdef GEODE_IS_DESKTOP
+  float fontSize = 21.f;
+  #else
+  float fontSize = 28.f;
+  #endif
 
   ImGuiCocos::get()
       .setup([&] {
         auto *font = ImGui::GetIO().Fonts->AddFontFromFileTTF(
-            (geode::utils::string::pathToString(Mod::get()->getResourcesDir() /
-                                                "font.ttf"))
-                .c_str(),
-            21.0f);
+        (geode::utils::string::pathToString(Mod::get()->getResourcesDir() / "font.ttf")).c_str(),
+        fontSize);
         ImGui::GetIO().FontDefault = font;
-      })
-      .draw([&] {
+      }).draw([&] {
         if (!menuVisible)
           return;
 

@@ -1,9 +1,10 @@
 # Changelog
 
 # 2.5.0
-- Added Stacked Orb Optimization
-- Fixed MacOS
-- Improved no effects implementation (small optimization)
+- Added mobile support
+- Added stacked orb optimization
+- Fixed macOS support
+- Optimized no effects
 
 # 2.4.2
 - New logo
