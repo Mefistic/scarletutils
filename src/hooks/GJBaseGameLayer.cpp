@@ -75,14 +75,22 @@ class $modify(ScarletGJBaseGameLayer, GJBaseGameLayer) {
                     auto orb = static_cast<RingObject*>(player->m_touchingRings->objectAtIndex(i));
                     if (orb->m_objectType == GameObjectType::DashRing && clickGreenDash) {
                         fakeInput.m_isPush = false;
+                        #ifndef GEODE_IS_ANDROID
+                        m_queuedButtons.insert(m_queuedButtons.begin(), fakeInput);
+                        #else
                         m_queuedButtons.push_back(fakeInput);
                         for (size_t i = m_queuedButtons.size() - 1; i > 0; --i) // workaround for geode bug
                             std::swap(m_queuedButtons[i], m_queuedButtons[i - 1]);
+                        #endif
 
                         fakeInput.m_isPush = true;
+                        #ifndef GEODE_IS_ANDROID
+                        m_queuedButtons.insert(m_queuedButtons.begin(), fakeInput);
+                        #else
                         m_queuedButtons.push_back(fakeInput);
                         for (size_t i = m_queuedButtons.size() - 1; i > 0; --i) // workaround for geode bug
                             std::swap(m_queuedButtons[i], m_queuedButtons[i - 1]);
+                        #endif
                     } else break;
                 }
 
@@ -93,14 +101,22 @@ class $modify(ScarletGJBaseGameLayer, GJBaseGameLayer) {
                             (player->m_yVelocity >= 0 && player->m_isUpsideDown) ||
                             clickBlackOrbs) {
                             fakeInput.m_isPush = false;
-                            m_queuedButtons.push_back(fakeInput);
-                            for (size_t i = m_queuedButtons.size() - 1; i > 0; --i) // workaround for geode bug
-                                std::swap(m_queuedButtons[i], m_queuedButtons[i - 1]);
+                        #ifndef GEODE_IS_ANDROID
+                        m_queuedButtons.insert(m_queuedButtons.begin(), fakeInput);
+                        #else
+                        m_queuedButtons.push_back(fakeInput);
+                        for (size_t i = m_queuedButtons.size() - 1; i > 0; --i) // workaround for geode bug
+                            std::swap(m_queuedButtons[i], m_queuedButtons[i - 1]);
+                        #endif
                             
                             fakeInput.m_isPush = true;
-                            m_queuedButtons.push_back(fakeInput);
-                            for (size_t i = m_queuedButtons.size() - 1; i > 0; --i) // workaround for geode bug
-                                std::swap(m_queuedButtons[i], m_queuedButtons[i - 1]);
+                        #ifndef GEODE_IS_ANDROID
+                        m_queuedButtons.insert(m_queuedButtons.begin(), fakeInput);
+                        #else
+                        m_queuedButtons.push_back(fakeInput);
+                        for (size_t i = m_queuedButtons.size() - 1; i > 0; --i) // workaround for geode bug
+                            std::swap(m_queuedButtons[i], m_queuedButtons[i - 1]);
+                        #endif
                         }
                     } else break;
                 }
@@ -122,13 +138,22 @@ class $modify(ScarletGJBaseGameLayer, GJBaseGameLayer) {
                 if (extraClick) {
                     for (int i = 0; i < extraClickAmount; i++) {
                         fakeInput.m_isPush = false;
+                        #ifndef GEODE_IS_ANDROID
+                        m_queuedButtons.insert(m_queuedButtons.begin(), fakeInput);
+                        #else
                         m_queuedButtons.push_back(fakeInput);
                         for (size_t i = m_queuedButtons.size() - 1; i > 0; --i) // workaround for geode bug
                             std::swap(m_queuedButtons[i], m_queuedButtons[i - 1]);
+                        #endif
+                        
                         fakeInput.m_isPush = true;
+                        #ifndef GEODE_IS_ANDROID
+                        m_queuedButtons.insert(m_queuedButtons.begin(), fakeInput);
+                        #else
                         m_queuedButtons.push_back(fakeInput);
                         for (size_t i = m_queuedButtons.size() - 1; i > 0; --i) // workaround for geode bug
                             std::swap(m_queuedButtons[i], m_queuedButtons[i - 1]);
+                        #endif
                     }
                 }
 
