@@ -46,21 +46,37 @@ class $modify(ScarletPlayerObject, PlayerObject) {
 
     void startDashing(DashRingObject* object) {
         if (noEffect) {
-            m_dashFireSprite->setDontDraw(true);
-            m_dashFireSprite->setOpacity(0);
-            m_dashFireSprite->setScale(0);
-        }
+            auto og = this->m_playEffects;
+            this->m_playEffects = false;
+            PlayerObject::startDashing(object);
+            this->m_playEffects = og;
+            return;
+        } else
         PlayerObject::startDashing(object);
     }
 
     void stopDashing() {
         if (noEffect) {
-            m_dashFireSprite->setDontDraw(true);
-            m_dashFireSprite->setOpacity(0);
-            m_dashFireSprite->setScale(0);
+            auto og = this->m_maybeReducedEffects;
+            this->m_maybeReducedEffects = true;
+            PlayerObject::stopDashing();
+            this->m_maybeReducedEffects = og;
+            return;
         }
         PlayerObject::stopDashing();
     }
+
+    void ringJump(RingObject* object, bool skipCheck) {
+        if (noEffect) {
+            auto og = this->m_playEffects;
+            this->m_playEffects = true;
+            PlayerObject::ringJump(object, skipCheck);
+            this->m_playEffects = og;
+            return;
+        }
+        PlayerObject::ringJump(object, skipCheck);
+    }
+
     void playSpiderDashEffect(CCPoint from, CCPoint to) {
         if (!noEffect)
         PlayerObject::playSpiderDashEffect(from, to);

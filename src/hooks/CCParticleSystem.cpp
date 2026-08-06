@@ -5,7 +5,8 @@ using namespace geode::prelude;
 
 class $modify(ScarletCCParticleSystem, CCParticleSystem) {
 	void update(float dt) {
-        	if (!noEffect)
-        	update(dt);
+		update(dt);
+		if (noEffect)
+		this->setVisible(false);
     	}
 };

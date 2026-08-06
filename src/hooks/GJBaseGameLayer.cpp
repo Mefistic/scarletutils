@@ -41,14 +41,8 @@ void runMaintainGravity() {
 }
 
 class $modify(ScarletGJBaseGameLayer, GJBaseGameLayer) {
-    void processCommands(float dt, bool isHalfTick, bool isLastTick) {
-
-        GJBaseGameLayer::processCommands(dt, isHalfTick, isLastTick);
-    }
-
     void playExitDualEffect(PlayerObject* player) {
-        if (m_playerDied && noDeathEffect || noEffect)
-            return;
+        if (!(m_playerDied && noDeathEffect || noEffect))
         GJBaseGameLayer::playExitDualEffect(player);
     }
 

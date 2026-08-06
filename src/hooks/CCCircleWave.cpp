@@ -4,6 +4,6 @@
 class $modify(ScarletCCCircleWave, CCCircleWave) {
     void draw() {
         if (!noEffect)
-            CCCircleWave::draw();
+        CCCircleWave::draw();
     }
 };
