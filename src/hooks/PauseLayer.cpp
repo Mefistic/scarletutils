@@ -3,19 +3,21 @@
 
 using namespace geode::prelude;
 
-class $modify(ScarletUtilsPauseLayerHook, PauseLayer)
-{
+class $modify(ScarletUtilsPauseLayerHook, PauseLayer) {
     void customSetup() {
         PauseLayer::customSetup();
 
+        auto rightButtonMenu = this->getChildByID("right-button-menu");
+        if (!rightButtonMenu) return;
+
+        auto sprite = CCSprite::create("logo-button.png"_spr);
+
         auto btn = CCMenuItemSpriteExtra::create(
-            CCSprite::create("logo-button.png"_spr),
+            sprite,
             this,
             menu_selector(ScarletUtilsPauseLayerHook::onButton)
         );
-        
-        auto rightButtonMenu = this->getChildByID("right-button-menu");
-        if (!rightButtonMenu) return;
+        btn->setID("scarlet-utils-button"_spr);
 
         rightButtonMenu->addChild(btn);
         rightButtonMenu->updateLayout();
