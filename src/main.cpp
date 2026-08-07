@@ -478,6 +478,7 @@ $on_mod(Loaded) {
           }
 
           if (ImGui::BeginTabItem("Visual")) {
+            #ifndef GEODE_IS_ANDROID
             ImGui::Checkbox("Level Fade In/Out", &fadeLevel);
             if (ImGui::IsItemEdited()) {
               Mod::get()->setSavedValue<bool>("fadeLevel", fadeLevel);
@@ -563,6 +564,7 @@ $on_mod(Loaded) {
             if (ImGui::IsItemEdited()) {
               Mod::get()->setSavedValue<bool>("hideNewBest", hideNewBest);
             }
+            #endif
 
             ImGui::Checkbox("No Death Effect", &noDeathEffect);
             if (ImGui::IsItemEdited()) {
