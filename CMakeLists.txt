@@ -21,7 +21,11 @@ endif()
 
 add_subdirectory($ENV{GEODE_SDK} ${CMAKE_CURRENT_BINARY_DIR}/geode)
 
-CPMAddPackage("gh:EESports7/gd-imgui-cocos#cc4b160")
+if (ANDROID)
+    CPMAddPackage("gh:EESports7/gd-imgui-cocos#3c31581")
+else()
+    CPMAddPackage("gh:matcool/gd-imgui-cocos#5ed86e0")
+endif()
 
 target_link_libraries(${PROJECT_NAME} imgui-cocos)
 
