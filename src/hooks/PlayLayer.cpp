@@ -59,20 +59,36 @@ class $modify(ScarletPlayLayer, PlayLayer) {
         PlayLayer::resetLevel();
         if (flipOnDeath && flipPlayer != 0) {
             if (flipOnDeathP1 && flipPlayer == 1 || flipOnDeathBoth) {
-                if (flipOnDeathLogicP1 || flipOnDeathSwift) {
+                if (!flipOnDeathSwift) {
+                    if (flipOnDeathLogicP1) {
+                        queueButton((int)PlayerButton::Jump, true, false ^
+                        GameManager::sharedState()->getGameVariable(GameVar::Flip2PlayerControls),0.0);
+                    }
+                    flipPlayer = 0;
+                    flipOnDeathLogicP1 = !flipOnDeathLogicP1;
+                } else {
                     queueButton((int)PlayerButton::Jump, true, false ^
                     GameManager::sharedState()->getGameVariable(GameVar::Flip2PlayerControls),0.0);
+                    queueButton((int)PlayerButton::Jump, false, false ^
+                    GameManager::sharedState()->getGameVariable(GameVar::Flip2PlayerControls),0.0);
+                    flipPlayer = 0;
                 }
-                flipPlayer = 0;
-                flipOnDeathLogicP1 = !flipOnDeathLogicP1;
             }
             if (flipOnDeathP2 && flipPlayer == 2 || flipOnDeathBoth) {
-                if (flipOnDeathLogicP2 || flipOnDeathSwift) {
+                if (!flipOnDeathSwift) {
+                    if (flipOnDeathLogicP2 || flipOnDeathSwift) {
+                        queueButton((int)PlayerButton::Jump, true, true ^
+                        GameManager::sharedState()->getGameVariable(GameVar::Flip2PlayerControls),0.0);
+                    }
+                    flipPlayer = 0;
+                    flipOnDeathLogicP2 = !flipOnDeathLogicP2;
+                } else {
                     queueButton((int)PlayerButton::Jump, true, true ^
                     GameManager::sharedState()->getGameVariable(GameVar::Flip2PlayerControls),0.0);
+                    queueButton((int)PlayerButton::Jump, false, true ^
+                    GameManager::sharedState()->getGameVariable(GameVar::Flip2PlayerControls),0.0);
+                    flipPlayer = 0;
                 }
-                flipPlayer = 0;
-                flipOnDeathLogicP2 = !flipOnDeathLogicP2;
             }
             this->processQueuedButtons(0, true);
             #ifdef GEODE_IS_WINDOWS

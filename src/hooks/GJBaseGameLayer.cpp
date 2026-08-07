@@ -17,8 +17,8 @@ void runMaintainGravity() {
         bool p1maintain = bgl->m_player1->m_holdingButtons[1] != bgl->m_player1->m_isUpsideDown;
         bool p2maintain = bgl->m_player2->m_holdingButtons[1] != bgl->m_player2->m_isUpsideDown;
 
-        bool p1holding = bgl->m_uiLayer->m_p1Jumping;
-        bool p2holding = bgl->m_uiLayer->m_p2Jumping;
+        bool p1holding = bgl->m_uiLayer->m_p1Jumping || bgl->m_uiLayer->m_p1TouchId != -1;
+        bool p2holding = bgl->m_uiLayer->m_p2Jumping || bgl->m_uiLayer->m_p2TouchId != -1;
 
         if (GameManager::sharedState()->getGameVariable(GameVar::Flip2PlayerControls))
             std::swap(p1holding, p2holding);

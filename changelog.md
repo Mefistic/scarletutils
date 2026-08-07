@@ -1,7 +1,10 @@
 # Changelog
 
 # 2.5.1
+- Added iOS support
+- Fixed maintain gravity not working on mobile
 - Fixed respawning while holding a dash orb causing a crash
+- Fixed flip on death swift mode
 
 # 2.5.0
 - Added mobile support
