@@ -1,5 +1,8 @@
 # Changelog
 
+# 2.5.1
+- Fixed respawning while holding a dash orb causing a crash
+
 # 2.5.0
 - Added mobile support
 - Added stacked orb optimization

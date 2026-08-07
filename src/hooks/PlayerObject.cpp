@@ -56,7 +56,8 @@ class $modify(ScarletPlayerObject, PlayerObject) {
         }
         else PlayerObject::startDashing(object);
         optimizeStartDashing = true;
-        lastOrb = object->m_objectID;
+        if (object)
+            lastOrb = object->m_objectID;
     }
 
     void stopDashing() {
