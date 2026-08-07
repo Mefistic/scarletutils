@@ -136,7 +136,7 @@ $on_mod(Loaded) {
   #ifdef GEODE_IS_DESKTOP
   float fontSize = 21.f;
   #else
-  float fontSize = 28.f;
+  float fontSize = 36.f;
   #endif
 
   ImGuiCocos::get()
